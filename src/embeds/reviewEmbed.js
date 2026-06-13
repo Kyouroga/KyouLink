@@ -1,0 +1,105 @@
+module.exports = () => ({});
+
+const COLORS =
+    require("../utils/colors");
+
+const truncate =
+    require("../utils/truncate");
+
+module.exports = payload => {
+    const repo =
+        payload.repository || {};
+
+    const review =
+        payload.review || {};
+
+    const pr =
+        payload.pull_request || {};
+
+    const user =
+        review.user || {};
+
+    const state =
+        (review.state || "")
+            .toLowerCase();
+
+    let color =
+        COLORS.REVIEW;
+
+    let stateText =
+        "Review Submitted";
+
+    switch (state) {
+        case "approved":
+            color = 0x2ECC71;
+            stateText = "Approved";
+            break;
+
+        case "changes_requested":
+            color = 0xE74C3C;
+            stateText =
+                "Changes Requested";
+            break;
+
+        case "commented":
+            color = COLORS.REVIEW;
+            stateText = "Commented";
+            break;
+    }
+
+    return {
+        color,
+
+        author: {
+            name:
+                user.login ||
+                "Unknown User",
+
+            url:
+                user.html_url,
+
+            icon_url:
+                user.avatar_url
+        },
+
+        title:
+            `[${repo.full_name}] Review on PR #${pr.number}`,
+
+        url:
+            review.html_url ||
+            pr.html_url,
+
+        description:
+            truncate(
+                review.body ||
+                "No review message provided.",
+                1800
+            ),
+
+        fields: [
+            {
+                name:
+                    "Review State",
+                value:
+                    stateText,
+                inline: true
+            },
+            {
+                name:
+                    "Pull Request",
+                value:
+                    pr.title ||
+                    "Unknown",
+                inline: false
+            }
+        ],
+
+        footer: {
+            text:
+                repo.full_name
+        },
+
+        timestamp:
+            new Date().toISOString()
+    };
+};

@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Runtime / Process
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage / Testing
+coverage/
+.nyc_output/
+
+# Build output
+dist/
+build/
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Cloudflare / Tunnel secrets
+cloudflared/
+*.json
+*.pem
+
+# Keep config template but not secrets
+!cloudflared/config.example.yml
+
+# PM2
+ecosystem.config.js
+.pm2/
