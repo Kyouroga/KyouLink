@@ -217,3 +217,9 @@ src/
 * Restrict firewall access
 * Keep GitHub Secret private
 * Use Discord rate limiting protection
+
+---
+
+## License
+
+MIT
