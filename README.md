@@ -1,6 +1,7 @@
+# Archive Repositoory
 # Kyouroga-Bridge-Git
 
-A lightweight GitHub → Discord webhook bridge that converts GitHub events into rich Discord embeds.
+A GitHub → Discord webhook bridge that converts GitHub events into Discord embeds.
 
 ## Features
 
@@ -217,9 +218,3 @@ src/
 * Restrict firewall access
 * Keep GitHub Secret private
 * Use Discord rate limiting protection
-
----
-
-## License
-
-MIT
