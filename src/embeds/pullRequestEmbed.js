@@ -8,6 +8,7 @@ module.exports = payload => {
     const repo =
         payload.repository || {};
 
+    // Payload (will change this)
     const pr =
         payload.pull_request ||
         {};

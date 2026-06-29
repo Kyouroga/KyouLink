@@ -1,6 +1,7 @@
 const COLORS =
     require("../utils/colors");
 
+// Payload (will change this)
 module.exports = payload => {
     const sender =
         payload.sender || {};
