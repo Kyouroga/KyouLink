@@ -18,7 +18,10 @@ module.exports = payload => {
         payload.sender ||
         {};
 
-    return {
+    const title =
+        `[${repo.full_name}] Release ${payload.action || "published"}: ${release.name || release.tag_name || "Release"}`.trim();
+
+    const embed = {
         color:
             COLORS.RELEASE,
 
@@ -34,18 +37,10 @@ module.exports = payload => {
                 user.avatar_url
         },
 
-        title:
-            `[${repo.full_name}] Release ${payload.action}`,
+        title,
 
         url:
             release.html_url,
-
-        description:
-            truncate(
-                release.body ||
-                `Version: ${release.tag_name}`,
-                1800
-            ),
 
         fields: [
             {
@@ -66,13 +61,26 @@ module.exports = payload => {
             }
         ],
 
-        footer: {
-            text:
-                repo.full_name
-        },
-
         timestamp:
             release.published_at ||
             new Date().toISOString()
     };
+
+    const description =
+        truncate(
+            release.body ||
+            `Version: ${release.tag_name}`,
+            1800
+        );
+
+    if (
+        description &&
+        description !==
+            "No content provided."
+    ) {
+        embed.description =
+            description;
+    }
+
+    return embed;
 };

@@ -17,7 +17,7 @@ module.exports = Object.freeze({
 
     RELEASE: "release",
 
-    WATCH: "watch",
+    // Deleted Watched/stared
 
     DISCUSSION: "discussion"
 });

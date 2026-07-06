@@ -21,7 +21,7 @@ module.exports = payload => {
         COLORS.PR_OPENED;
 
     let actionText =
-        "Pull Request opened";
+        "Pull request opened";
 
     if (
         payload.action ===
@@ -31,7 +31,7 @@ module.exports = payload => {
             COLORS.PR_REOPENED;
 
         actionText =
-            "Pull Request reopened";
+            "Pull request reopened";
     }
 
     if (
@@ -45,51 +45,20 @@ module.exports = payload => {
                 COLORS.PR_MERGED;
 
             actionText =
-                "Pull Request merged";
+                "Pull request merged";
         } else {
             color =
                 COLORS.PR_CLOSED;
 
             actionText =
-                "Pull Request closed";
+                "Pull request closed";
         }
     }
 
-    const fields = [
-        {
-            name:
-                "Source Branch",
-            value:
-                pr.head?.ref ||
-                "Unknown",
-            inline: true
-        },
-        {
-            name:
-                "Target Branch",
-            value:
-                pr.base?.ref ||
-                "Unknown",
-            inline: true
-        }
-    ];
+    const title =
+        `[${repo.full_name}] ${actionText}: #${pr.number} ${pr.title || ""}`.trim();
 
-    if (
-        typeof pr.changed_files ===
-        "number"
-    ) {
-        fields.push({
-            name:
-                "Files Changed",
-            value:
-                String(
-                    pr.changed_files
-                ),
-            inline: true
-        });
-    }
-
-    return {
+    const embed = {
         color,
 
         author: {
@@ -104,26 +73,29 @@ module.exports = payload => {
                 user.avatar_url
         },
 
-        title:
-            `[${repo.full_name}] ${actionText}: #${pr.number}`,
+        title,
 
         url:
             pr.html_url,
 
-        description:
-            truncate(
-                `${pr.title}\n\n${pr.body || ""}`,
-                1800
-            ),
-
-        fields,
-
-        footer: {
-            text:
-                repo.full_name
-        },
-
         timestamp:
             new Date().toISOString()
     };
+
+    const description =
+        truncate(
+            pr.body || "",
+            1800
+        );
+
+    if (
+        description &&
+        description !==
+            "No content provided."
+    ) {
+        embed.description =
+            description;
+    }
+
+    return embed;
 };

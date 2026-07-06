@@ -1,4 +1,3 @@
-# Archive Repositoory
 # Kyouroga-Bridge-Git
 
 A GitHub → Discord webhook bridge that converts GitHub events into Discord embeds.
@@ -14,7 +13,6 @@ A GitHub → Discord webhook bridge that converts GitHub events into Discord emb
 * Pull Request Review Comments
 * Releases
 * Discussions
-* Repository Stars
 * GitHub Signature Validation
 * Discord Webhook Integration
 
@@ -133,7 +131,6 @@ Events:
 * Pull request review comments
 * Releases
 * Discussions
-* Stars
 
 Save webhook.
 
