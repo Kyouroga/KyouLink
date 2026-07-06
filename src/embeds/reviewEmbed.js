@@ -47,7 +47,7 @@ module.exports = payload => {
             break;
     }
 
-    return {
+    const embed = {
         color,
 
         author: {
@@ -69,13 +69,6 @@ module.exports = payload => {
             review.html_url ||
             pr.html_url,
 
-        description:
-            truncate(
-                review.body ||
-                "No review message provided.",
-                1800
-            ),
-
         fields: [
             {
                 name:
@@ -83,23 +76,27 @@ module.exports = payload => {
                 value:
                     stateText,
                 inline: true
-            },
-            {
-                name:
-                    "Pull Request",
-                value:
-                    pr.title ||
-                    "Unknown",
-                inline: false
             }
         ],
-
-        footer: {
-            text:
-                repo.full_name
-        },
 
         timestamp:
             new Date().toISOString()
     };
+
+    const description =
+        truncate(
+            review.body || "",
+            1800
+        );
+
+    if (
+        description &&
+        description !==
+            "No content provided."
+    ) {
+        embed.description =
+            description;
+    }
+
+    return embed;
 };
