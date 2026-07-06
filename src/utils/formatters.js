@@ -5,14 +5,18 @@ function formatCommitList(commits = []) {
         .slice(0, 10)
         .map(commit => {
             const hash = commit.id.substring(0, 7);
+            const commitUrl = commit.url || "";
+            const hashText = commitUrl
+                ? `[${hash}](${commitUrl})`
+                : `\`${hash}\``;
 
             return [
-                `\`${hash}\``,
+                hashText,
                 truncate(
                     commit.message.split("\n")[0],
                     100
                 ),
-                `- ${commit.author.name}`
+                `- ${commit.author?.name || commit.author?.login || "Unknown"}`
             ].join(" ");
         })
         .join("\n");
