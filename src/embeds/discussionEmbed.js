@@ -28,17 +28,24 @@ module.exports = payload => {
         action === "created"
     ) {
         title =
-            `[${repo.full_name}] Discussion Created`;
+            `[${repo.full_name}] Discussion created`;
     }
 
     if (
         action === "answered"
     ) {
         title =
-            `[${repo.full_name}] Discussion Answered`;
+            `[${repo.full_name}] Discussion answered`;
     }
 
-    return {
+    if (
+        discussion.title
+    ) {
+        title =
+            `${title}: ${discussion.title}`;
+    }
+
+    const embed = {
         color:
             COLORS.DISCUSSION,
 
@@ -59,12 +66,6 @@ module.exports = payload => {
         url:
             discussion.html_url,
 
-        description:
-            truncate(
-                `${discussion.title}\n\n${discussion.body || ""}`,
-                1800
-            ),
-
         fields: [
             {
                 name:
@@ -77,12 +78,24 @@ module.exports = payload => {
             }
         ],
 
-        footer: {
-            text:
-                repo.full_name
-        },
-
         timestamp:
             new Date().toISOString()
     };
+
+    const description =
+        truncate(
+            discussion.body || "",
+            1800
+        );
+
+    if (
+        description &&
+        description !==
+            "No content provided."
+    ) {
+        embed.description =
+            description;
+    }
+
+    return embed;
 };
