@@ -25,8 +25,7 @@ const handlers = {
 
     discussion:
         require("../handlers/discussion"),
-
-    watch: require("../handlers/star")
+    
 };
 
 module.exports = async (
