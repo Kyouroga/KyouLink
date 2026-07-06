@@ -1,7 +1,6 @@
 const COLORS =
     require("../utils/colors");
 
-// Payload (will change this)
 module.exports = payload => {
     const sender =
         payload.sender || {};
@@ -28,18 +27,10 @@ module.exports = payload => {
         },
 
         title:
-            `[${repository.full_name}] Fork created`,
+            `[${repository.full_name}] Fork created: ${forkee.full_name || forkee.name || "Unknown repository"}`,
 
         url:
             forkee.html_url,
-
-        description:
-            `Fork Repository: **${forkee.full_name}**`,
-
-        footer: {
-            text:
-                repository.full_name
-        },
 
         timestamp:
             new Date().toISOString()

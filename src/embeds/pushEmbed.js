@@ -54,12 +54,6 @@ module.exports = payload => {
                   )
                 : "No commits included in payload.",
 
-        footer: {
-            text:
-                payload.repository?.name ||
-                ""
-        },
-
         timestamp:
             new Date().toISOString()
     };

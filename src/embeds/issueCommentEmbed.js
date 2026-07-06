@@ -17,7 +17,7 @@ module.exports = payload => {
     const user =
         comment.user || {};
 
-    return {
+    const embed = {
         color:
             COLORS.ISSUE_COMMENT,
 
@@ -39,18 +39,24 @@ module.exports = payload => {
         url:
             comment.html_url,
 
-        description:
-            truncate(
-                comment.body,
-                1800
-            ),
-
-        footer: {
-            text:
-                repo.full_name
-        },
-
         timestamp:
             new Date().toISOString()
     };
+
+    const description =
+        truncate(
+            comment.body || "",
+            1800
+        );
+
+    if (
+        description &&
+        description !==
+            "No content provided."
+    ) {
+        embed.description =
+            description;
+    }
+
+    return embed;
 };

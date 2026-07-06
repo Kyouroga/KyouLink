@@ -19,7 +19,7 @@ module.exports = payload => {
     const user =
         comment.user || {};
 
-    return {
+    const embed = {
         color:
             COLORS.REVIEW_COMMENT,
 
@@ -41,29 +41,24 @@ module.exports = payload => {
         url:
             comment.html_url,
 
-        description:
-            truncate(
-                comment.body,
-                1800
-            ),
-
-        fields: [
-            {
-                name:
-                    "Pull Request",
-                value:
-                    pr.title ||
-                    "Unknown",
-                inline: false
-            }
-        ],
-
-        footer: {
-            text:
-                repo.full_name
-        },
-
         timestamp:
             new Date().toISOString()
     };
+
+    const description =
+        truncate(
+            comment.body || "",
+            1800
+        );
+
+    if (
+        description &&
+        description !==
+            "No content provided."
+    ) {
+        embed.description =
+            description;
+    }
+
+    return embed;
 };
