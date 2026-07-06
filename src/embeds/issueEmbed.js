@@ -44,7 +44,10 @@ module.exports = payload => {
             "Issue reopened"
     };
 
-    return {
+    const title =
+        `[${repo.full_name}] ${actionText[payload.action] || actionText.opened}: #${issue.number} ${issue.title || ""}`.trim();
+
+    const embed = {
         color,
 
         author: {
@@ -59,24 +62,29 @@ module.exports = payload => {
                 user.avatar_url
         },
 
-        title:
-            `[${repo.full_name}] ${actionText[payload.action]}: #${issue.number}`,
+        title,
 
         url:
             issue.html_url,
 
-        description:
-            truncate(
-                `${issue.title}\n\n${issue.body || ""}`,
-                1800
-            ),
-
-        footer: {
-            text:
-                repo.full_name
-        },
-
         timestamp:
             new Date().toISOString()
     };
+
+    const description =
+        truncate(
+            issue.body || "",
+            1800
+        );
+
+    if (
+        description &&
+        description !==
+            "No content provided."
+    ) {
+        embed.description =
+            description;
+    }
+
+    return embed;
 };
