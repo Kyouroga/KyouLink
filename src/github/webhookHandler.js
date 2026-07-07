@@ -1,5 +1,6 @@
 import verifySignature from './verifySignature.js';
 import dispatch from './eventDispatcher.js';
+import { getConfig } from '../config/config.js';
 
 const MAX_PAYLOAD_SIZE = 1024 * 1024; // 1 MB
 
@@ -62,11 +63,40 @@ function getRawBodyBuffer(rawBody) {
     return null;
 }
 
-async function handleGithubWebhook({ method, headers, rawBody, parsedBody, env = {} }) {
+async function handleGithubWebhook({ method, headers, rawBody, parsedBody, env = {}, url }) {
     const verb = String(method || '').toUpperCase();
 
     // Simple health check for browser/uptime probes
     if (verb === 'GET') {
+        try {
+            if (url) {
+                const u = new URL(url);
+                const diag = u.searchParams.get('diag');
+                if (diag) {
+                    const config = getConfig(env);
+                    const secretPresent = !!(
+                        (env && env.GITHUB_SECRET) ||
+                        (config && config.github && config.github.secret)
+                    );
+                    const discordPresent = !!(
+                        (env && env.DISCORD_WEBHOOK_URL) ||
+                        (config && config.discord && config.discord.webhookUrl)
+                    );
+
+                    return buildResponse(200, {
+                        success: true,
+                        diagnostic: {
+                            github_secret_present: secretPresent,
+                            discord_webhook_present: discordPresent
+                        }
+                    });
+                }
+            }
+        } catch (err) {
+            // fall through to default health response
+            console.error('Diag parse error', err);
+        }
+
         return buildResponse(200, {
             success: true,
             message: 'OK'
