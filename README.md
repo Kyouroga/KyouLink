@@ -1,33 +1,27 @@
 # Kyouroga-Bridge-Git
 
-A GitHub → Discord webhook bridge that converts GitHub events into Discord embeds.
+A secure GitHub → Discord webhook bridge logic library redesigned for Cloudflare Worker compatibility.
 
 ## Features
 
-* Push Notifications
-* Fork Notifications
-* Issues
-* Issue Comments
-* Pull Requests
-* Pull Request Reviews
-* Pull Request Review Comments
-* Releases
-* Discussions
-* GitHub Signature Validation
-* Discord Webhook Integration
+* GitHub webhook signature validation
+* Discord webhook notifications with GitHub identity
+* Supports push, fork, issues, comments, pull requests, reviews, releases, and discussions
+* Cloudflare Worker friendly handler
+* Minimal attack surface and payload validation
 
 ---
 
 ## Requirements
 
-* Node.js 20+
-* npm 10+
-* GitHub Repository
-* Discord Webhook URL
+* GitHub repository with webhook access
+* Discord webhook URL
+* GitHub webhook secret
+* Cloudflare Workers environment or compatible serverless runtime
 
 ---
 
-## Installation
+## Setup
 
 Clone the repository:
 
@@ -42,33 +36,28 @@ Install dependencies:
 npm install
 ```
 
-Copy environment file:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env`:
+Create a `.env` file for local testing if needed:
 
 ```env
-PORT=3000
-
 GITHUB_SECRET=your_secret
-
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/xxxx
 ```
 
-Start:
+> This repository no longer includes a local Express server entrypoint or Docker deployment files. The logic is designed to be imported into a Cloudflare Worker or another serverless adapter.
 
-```bash
-npm start
-```
+---
 
-Development:
+## Usage
 
-```bash
-npm run dev
-```
+The webhook handler is located at `src/github/webhookHandler.js`.
+
+### Cloudflare Worker
+
+Deploy a Cloudflare Worker that forwards incoming requests to the handler, preserving raw headers, body, and method. Set `GITHUB_SECRET` and `DISCORD_WEBHOOK_URL` as Worker environment variables.
+
+### Local runtime
+
+Use the handler in any Node-compatible runtime by adapting request handling and passing raw request data, headers, and parsed JSON payload.
 
 ---
 
@@ -78,116 +67,37 @@ npm run dev
 POST /github/webhook
 ```
 
-Example:
+### Required headers
 
-```text
-https://example.com/github/webhook
-```
+* `Content-Type: application/json`
+* `X-Hub-Signature-256`
+* `X-GitHub-Event`
 
 ---
 
 ## GitHub Webhook Setup
 
-Repository
+Repository > Settings > Webhooks > Add webhook
 
-Settings
-
-Webhooks
-
-Add webhook
-
-Payload URL:
-
-```text
-https://your-domain.com/github/webhook
-```
-
-Content Type:
-
-```text
-application/json
-```
-
-Secret:
-
-```text
-same value as GITHUB_SECRET
-```
-
-Enable SSL Verification:
-
-```text
-true
-```
-
-Events:
-
-* Pushes
-* Forks
-* Issues
-* Issue comments
-* Pull requests
-* Pull request reviews
-* Pull request review comments
-* Releases
-* Discussions
-
-Save webhook.
+* Payload URL: `https://your-domain.com/github/webhook`
+* Content type: `application/json`
+* Secret: same value as `GITHUB_SECRET`
+* Enable SSL verification: `true`
+* Events: choose the events you want to forward
 
 ---
 
 ## Supported Events
 
-### Push
-
-```text
-[Kyouroga/dontcopy:master] 3 new commits
-```
-
-### Fork
-
-```text
-[Kyouroga/dontcopy] Fork created
-```
-
-### Issues
-
-```text
-Issue opened
-Issue closed
-Issue reopened
-```
-
-### Pull Requests
-
-```text
-Pull Request opened
-Pull Request closed
-Pull Request merged
-Pull Request reopened
-```
-
-### Reviews
-
-```text
-Approved
-Changes Requested
-Commented
-```
-
-### Releases
-
-```text
-Release Published
-Release Created
-```
-
-### Discussions
-
-```text
-Discussion Created
-Discussion Answered
-```
+* `push`
+* `fork`
+* `issues`
+* `issue_comment`
+* `pull_request`
+* `pull_request_review`
+* `pull_request_review_comment`
+* `release`
+* `discussion`
 
 ---
 
@@ -195,23 +105,28 @@ Discussion Answered
 
 ```text
 src/
-├── app.js
 ├── config/
+├── constants/
+├── embeds/
 ├── github/
 ├── handlers/
-├── embeds/
 ├── services/
-├── utils/
-└── constants/
+└── utils/
 ```
 
 ---
 
-## Production Recommendations
+## Security Notes
 
-* Use HTTPS
-* Run behind Nginx
-* Use PM2
-* Restrict firewall access
-* Keep GitHub Secret private
-* Use Discord rate limiting protection
+* All requests require HMAC signature verification
+* Raw payload is validated before parsing
+* Only supported GitHub events are processed
+* Old Express, Docker, and PM2 deployment files have been removed
+* Keep `GITHUB_SECRET` private and do not commit it
+
+---
+
+## Notes
+
+* The repository does not require `axios` or Express for webhook delivery; it uses native `fetch` and Cloudflare Worker bindings.
+* For Cloudflare deployment, use the lightweight Worker wrapper in `src/worker.js` to forward events to `handleGithubWebhook`.

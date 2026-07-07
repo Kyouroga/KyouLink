@@ -1,12 +1,8 @@
-module.exports = () => ({});
+import * as COLORS from '../utils/colors.js';
 
-const COLORS =
-    require("../utils/colors");
+import truncate from '../utils/truncate.js';
 
-const truncate =
-    require("../utils/truncate");
-
-module.exports = payload => {
+export default payload => {
     const repo =
         payload.repository || {};
 
@@ -59,11 +55,7 @@ module.exports = payload => {
                     "Unnamed Release",
                 inline: true
             }
-        ],
-
-        timestamp:
-            release.published_at ||
-            new Date().toISOString()
+        ]
     };
 
     const description =
