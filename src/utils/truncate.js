@@ -1,4 +1,4 @@
-module.exports = function truncate(text, max = 1024) {
+export default function truncate(text, max = 1024) {;
     if (!text) return "No content provided.";
 
     const cleaned = String(text).trim();
