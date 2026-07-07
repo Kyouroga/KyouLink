@@ -9,7 +9,8 @@ export default {
       headers: request.headers,
       rawBody,
       parsedBody: undefined,
-      env
+      env,
+      url: request.url
     });
 
     return new Response(JSON.stringify(result.body), {
