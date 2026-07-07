@@ -1,32 +1,73 @@
-const crypto = require("crypto");
-const config = require("../config/config");
+import config from '../config/config.js';
 
-function verifySignature(req) {
-    const signature =
-        req.headers["x-hub-signature-256"];
-
-    if (!signature) {
-        return false;
-    }
-
-    const expected =
-        "sha256=" +
-        crypto
-            .createHmac(
-                "sha256",
-                config.github.secret
-            )
-            .update(req.rawBody)
-            .digest("hex");
-
-    try {
-        return crypto.timingSafeEqual(
-            Buffer.from(signature),
-            Buffer.from(expected)
-        );
-    } catch {
-        return false;
-    }
+function textToUint8Array(text) {
+    return new TextEncoder().encode(text);
 }
 
-module.exports = verifySignature;
+function secureCompare(a, b) {
+    if (typeof a !== "string" || typeof b !== "string") {
+        return false;
+    }
+
+    if (a.length !== b.length) {
+        return false;
+    }
+
+    let result = 0;
+    for (let i = 0; i < a.length; i += 1) {
+        result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    }
+
+    return result === 0;
+}
+
+async function computeHmac(rawBody, secret) {
+    const key = await crypto.subtle.importKey(
+        "raw",
+        textToUint8Array(secret),
+        {
+            name: "HMAC",
+            hash: "SHA-256"
+        },
+        false,
+        ["sign"]
+    );
+
+    const signature = await crypto.subtle.sign(
+        "HMAC",
+        key,
+        rawBody
+    );
+
+    return Array.from(new Uint8Array(signature))
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
+}
+
+async function verifySignature(signature, rawBodyBuffer, env = {}) {
+    if (!signature || !rawBodyBuffer) {
+        return false;
+    }
+
+    const secret =
+        env.GITHUB_SECRET ||
+        config.github.secret;
+
+    if (!secret) {
+        return false;
+    }
+
+    const expectedHash = await computeHmac(
+        rawBodyBuffer,
+        secret
+    );
+
+    const expected = `sha256=${expectedHash}`;
+
+    return secureCompare(
+        signature,
+        expected
+    );
+}
+
+export default verifySignature;
