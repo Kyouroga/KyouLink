@@ -1,4 +1,4 @@
-import COLORS from '../utils/colors.js';
+import * as COLORS from '../utils/colors.js';
 
 export default payload => {
     const sender =
