@@ -43,6 +43,7 @@ GITHUB_SECRET=your_secret
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/xxxx
 ```
 
+> [!IMPORTANT]
 > This repository no longer includes a local Express server entrypoint or Docker deployment files. The logic is designed to be imported into a Cloudflare Worker or another serverless adapter.
 
 ---
