@@ -1,7 +1,6 @@
-const COLORS =
-    require("../utils/colors");
+import COLORS from '../utils/colors.js';
 
-module.exports = payload => {
+export default payload => {
     const sender =
         payload.sender || {};
 
@@ -30,9 +29,6 @@ module.exports = payload => {
             `[${repository.full_name}] Fork created: ${forkee.full_name || forkee.name || "Unknown repository"}`,
 
         url:
-            forkee.html_url,
-
-        timestamp:
-            new Date().toISOString()
+            forkee.html_url
     };
 };
