@@ -1,10 +1,8 @@
-const COLORS =
-    require("../utils/colors");
+import COLORS from '../utils/colors.js';
 
-const truncate =
-    require("../utils/truncate");
+import truncate from '../utils/truncate.js';
 
-module.exports = payload => {
+export default payload => {
     const issue =
         payload.issue || {};
 
@@ -65,10 +63,7 @@ module.exports = payload => {
         title,
 
         url:
-            issue.html_url,
-
-        timestamp:
-            new Date().toISOString()
+            issue.html_url
     };
 
     const description =
