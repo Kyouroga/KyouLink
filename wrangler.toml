@@ -2,8 +2,7 @@
 # Fill `account_id` or pass it via `--account-id` when deploying.
 name = "kyouroga-bridge-git"
 main = "src/worker.js"
-compatibility_date = "2026-07-08"
-type = "javascript"
+compatibility_date = "2026-07-07"
 workers_dev = true
 
 # Optional: uncomment and set these if you want to publish to a zone/route
