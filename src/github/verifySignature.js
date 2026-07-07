@@ -1,4 +1,4 @@
-import config from '../config/config.js';
+import { getConfig } from '../config/config.js';
 
 function textToUint8Array(text) {
     return new TextEncoder().encode(text);
@@ -49,6 +49,7 @@ async function verifySignature(signature, rawBodyBuffer, env = {}) {
         return false;
     }
 
+    const config = getConfig(env);
     const secret =
         env.GITHUB_SECRET ||
         config.github.secret;
