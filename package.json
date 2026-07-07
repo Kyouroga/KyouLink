@@ -2,26 +2,18 @@
   "name": "kyouroga-bridge-git",
   "version": "1.0.0",
   "description": "GitHub to Discord Webhook Bridge",
-  "main": "src/app.js",
-  "type": "commonjs",
-  "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
-  },
+  "main": "src/github/webhookHandler.js",
+  "type": "module",
+  "scripts": {},
   "keywords": [
     "github",
     "discord",
     "webhook",
-    "bridge"
+    "bridge",
+    "cloudflare"
   ],
   "author": "",
   "license": "MIT",
-  "dependencies": {
-    "axios": "^1.11.0",
-    "dotenv": "^17.2.2",
-    "express": "^5.1.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
