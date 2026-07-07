@@ -63,7 +63,17 @@ function getRawBodyBuffer(rawBody) {
 }
 
 async function handleGithubWebhook({ method, headers, rawBody, parsedBody, env = {} }) {
-    if (String(method || '').toUpperCase() !== 'POST') {
+    const verb = String(method || '').toUpperCase();
+
+    // Simple health check for browser/uptime probes
+    if (verb === 'GET') {
+        return buildResponse(200, {
+            success: true,
+            message: 'OK'
+        });
+    }
+
+    if (verb !== 'POST') {
         return buildResponse(405, {
             success: false,
             error: 'Method not allowed'
@@ -139,7 +149,15 @@ async function handleGithubWebhook({ method, headers, rawBody, parsedBody, env =
 
     const normalizedEvent = String(event).trim();
 
-    await dispatch(normalizedEvent, payload, env);
+    try {
+        await dispatch(normalizedEvent, payload, env);
+    } catch (err) {
+        console.error('Error dispatching event:', err && err.stack ? err.stack : err);
+        return buildResponse(500, {
+            success: false,
+            error: 'Internal server error'
+        });
+    }
 
     return buildResponse(200, {
         success: true
