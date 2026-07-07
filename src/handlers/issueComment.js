@@ -1,12 +1,8 @@
-const { sendEmbed } =
-    require("../services/discord");
+import { sendEmbed } from '../services/discord.js';
 
-const buildEmbed =
-    require(
-        "../embeds/issueCommentEmbed"
-    );
+import buildEmbed from '../embeds/issueCommentEmbed.js';
 
-module.exports = async payload => {
+export default async (payload, env = {}) => {
     if (
         payload.action !==
         "created"
@@ -17,5 +13,5 @@ module.exports = async payload => {
     const embed =
         buildEmbed(payload);
 
-    await sendEmbed(embed);
+    await sendEmbed(embed, undefined, env);
 };
