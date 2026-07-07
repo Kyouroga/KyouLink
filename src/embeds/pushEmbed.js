@@ -1,4 +1,4 @@
-import COLORS from '../utils/colors.js';
+import * as COLORS from '../utils/colors.js';
 
 import { formatCommitList,
     getBranchName } from '../utils/formatters.js';
