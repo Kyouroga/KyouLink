@@ -1,6 +1,7 @@
-import config from '../config/config.js';
+import { getConfig } from '../config/config.js';
 
 async function sendEmbed(embed, webhookUrl, env = {}) {
+    const config = getConfig(env);
     const url =
         webhookUrl ||
         env.DISCORD_WEBHOOK_URL ||
