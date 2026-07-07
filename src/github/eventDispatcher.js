@@ -1,45 +1,37 @@
+import discussionHandler from "../handlers/discussion.js";
+import forkHandler from "../handlers/fork.js";
+import issueCommentHandler from "../handlers/issueComment.js";
+import issuesHandler from "../handlers/issues.js";
+import pullRequestHandler from "../handlers/pullRequest.js";
+import pullRequestReviewCommentHandler from "../handlers/pullRequestReviewComment.js";
+import pullRequestReviewHandler from "../handlers/pullRequestReview.js";
+import pushHandler from "../handlers/push.js";
+import releaseHandler from "../handlers/release.js";
+import { sendEmbed } from "../services/discord.js";
+import buildGenericEmbed from "../embeds/genericEmbed.js";
+
 const handlers = {
-    push: require("../handlers/push"),
-
-    fork: require("../handlers/fork"),
-
-    issues: require("../handlers/issues"),
-
-    issue_comment:
-        require("../handlers/issueComment"),
-
-    pull_request:
-        require("../handlers/pullRequest"),
-
-    pull_request_review:
-        require(
-            "../handlers/pullRequestReview"
-        ),
-
-    pull_request_review_comment:
-        require(
-            "../handlers/pullRequestReviewComment"
-        ),
-
-    release: require("../handlers/release"),
-
-    discussion:
-        require("../handlers/discussion"),
-    
+    push: pushHandler,
+    fork: forkHandler,
+    issues: issuesHandler,
+    issue_comment: issueCommentHandler,
+    pull_request: pullRequestHandler,
+    pull_request_review: pullRequestReviewHandler,
+    pull_request_review_comment: pullRequestReviewCommentHandler,
+    release: releaseHandler,
+    discussion: discussionHandler
 };
 
-module.exports = async (
-    event,
-    payload
-) => {
+export default async function dispatch(event, payload, env = {}) {
     const handler = handlers[event];
 
-    if (!handler) {
-        console.log(
-            `Unhandled event: ${event}`
-        );
+    if (handler) {
+        await handler(payload, env);
         return;
     }
 
-    await handler(payload);
+    console.log(`Generic fallback for event: ${event}`);
+
+    const embed = buildGenericEmbed(payload, event);
+    await sendEmbed(embed, undefined, env);
 };
