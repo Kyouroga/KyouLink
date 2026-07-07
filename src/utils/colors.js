@@ -1,24 +1,15 @@
-module.exports = {
-    FORK: 0x95A5A6,
-
-    PUSH: 0x3498DB,
-
-    ISSUE_OPENED: 0xE67E22,
-    ISSUE_CLOSED: 0xE74C3C,
-    ISSUE_REOPENED: 0x2ECC71,
-    ISSUE_COMMENT: 0xF39C12,
-
-    PR_OPENED: 0x9B59B6,
-    PR_CLOSED: 0xE74C3C,
-    PR_MERGED: 0x2ECC71,
-    PR_REOPENED: 0x3498DB,
-
-    REVIEW: 0x1ABC9C,
-    REVIEW_COMMENT: 0x16A085,
-
-    RELEASE: 0xF1C40F,
-
-    STAR: 0xFFD700,
-
-    DISCUSSION: 0x7289DA
-};
+export const FORK = 0x95A5A6;
+export const PUSH = 0x3498DB;
+export const ISSUE_OPENED = 0xE67E22;
+export const ISSUE_CLOSED = 0xE74C3C;
+export const ISSUE_REOPENED = 0x2ECC71;
+export const ISSUE_COMMENT = 0xF39C12;
+export const PR_OPENED = 0x9B59B6;
+export const PR_CLOSED = 0xE74C3C;
+export const PR_MERGED = 0x2ECC71;
+export const PR_REOPENED = 0x3498DB;
+export const REVIEW = 0x1ABC9C;
+export const REVIEW_COMMENT = 0x16A085;
+export const RELEASE = 0xF1C40F;
+export const STAR = 0xFFD700;
+export const DISCUSSION = 0x7289DA;
