@@ -1,4 +1,4 @@
-const truncate = require("./truncate");
+import truncate from './truncate.js';
 
 function formatCommitList(commits = []) {
     return commits
@@ -7,7 +7,7 @@ function formatCommitList(commits = []) {
             const hash = commit.id.substring(0, 7);
             const commitUrl = commit.url || "";
             const hashText = commitUrl
-                ? `[${hash}](${commitUrl})`
+                ? `[\`${hash}\`](${commitUrl})`
                 : `\`${hash}\``;
 
             return [
@@ -30,8 +30,4 @@ function getTagName(ref = "") {
     return ref.replace("refs/tags/", "");
 }
 
-module.exports = {
-    formatCommitList,
-    getBranchName,
-    getTagName
-};
+export { formatCommitList, getBranchName, getTagName };

@@ -1,12 +1,8 @@
-const { sendEmbed } =
-    require("../services/discord");
+import { sendEmbed } from '../services/discord.js';
 
-const buildEmbed =
-    require(
-        "../embeds/pullRequestEmbed"
-    );
+import buildEmbed from '../embeds/pullRequestEmbed.js';
 
-module.exports = async payload => {
+export default async (payload, env = {}) => {
     const action =
         payload.action;
 
@@ -25,5 +21,5 @@ module.exports = async payload => {
     const embed =
         buildEmbed(payload);
 
-    await sendEmbed(embed);
+    await sendEmbed(embed, undefined, env);
 };

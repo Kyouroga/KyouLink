@@ -38,8 +38,15 @@ Thumbs.db
 cloudflared/
 *.pem
 
+# Cloudflare Wrangler
+.wrangler/
+
 # Keep config template but not secrets
 !cloudflared/config.example.yml
+
+# Python cache
+__pycache__/
+*.py[cod]
 
 # PM2
 .pm2/

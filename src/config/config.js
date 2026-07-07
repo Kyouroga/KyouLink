@@ -1,13 +1,24 @@
-require("dotenv").config();
+const isNode =
+    typeof process !== "undefined" &&
+    process?.versions?.node;
 
-module.exports = {
-    port: parseInt(process.env.PORT || "3000", 10),
+function getConfig(env = {}) {
+    const source =
+        env && Object.keys(env).length > 0
+            ? env
+            : isNode
+            ? process.env
+            : {};
 
-    github: {
-        secret: process.env.GITHUB_SECRET
-    },
+    return {
+        port: parseInt(source.PORT || "3000", 10),
+        github: {
+            secret: source.GITHUB_SECRET || ""
+        },
+        discord: {
+            webhookUrl: source.DISCORD_WEBHOOK_URL || ""
+        }
+    };
+}
 
-    discord: {
-        webhookUrl: process.env.DISCORD_WEBHOOK_URL
-    }
-};
+export { getConfig };
