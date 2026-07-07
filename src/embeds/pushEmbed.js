@@ -1,12 +1,9 @@
-const COLORS =
-    require("../utils/colors");
+import COLORS from '../utils/colors.js';
 
-const {
-    formatCommitList,
-    getBranchName
-} = require("../utils/formatters");
+import { formatCommitList,
+    getBranchName } from '../utils/formatters.js';
 
-module.exports = payload => {
+export default payload => {
     const repo =
         payload.repository?.full_name ||
         "Unknown Repository";
@@ -52,9 +49,6 @@ module.exports = payload => {
                 ? formatCommitList(
                       commits
                   )
-                : "No commits included in payload.",
-
-        timestamp:
-            new Date().toISOString()
+                : "No commits included in payload."
     };
 };
