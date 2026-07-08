@@ -109,6 +109,19 @@ function isBranchLifecycleEvent(payload, event) {
     );
 }
 
+function isIgnoredEvent(event) {
+    const ignoredEvents = new Set([
+        'workflow_run',
+        'workflow_job',
+        'workflow_dispatch',
+        'check_run',
+        'check_suite',
+        'status'
+    ]);
+
+    return ignoredEvents.has(String(event).toLowerCase());
+}
+
 export default function buildGenericEmbed(payload, event) {
     const action = payload.action || payload.state || payload.ref_type || payload.event || 'updated';
 
@@ -119,6 +132,10 @@ export default function buildGenericEmbed(payload, event) {
         (normalizedEvent === 'watch' || normalizedEvent === 'star') &&
         normalizedAction !== 'started'
     ) {
+        return null;
+    }
+
+    if (isIgnoredEvent(event)) {
         return null;
     }
 
