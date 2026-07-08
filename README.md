@@ -99,6 +99,7 @@ Repository > Settings > Webhooks > Add webhook
 * `pull_request_review`
 * `pull_request_review_comment`
 * `release`
+* `repository` (rename only)
 * `discussion`
 
 ---
@@ -106,6 +107,7 @@ Repository > Settings > Webhooks > Add webhook
 ## Embed behavior
 
 * `push` branch creation and deletion events emit minimal title-only embeds when `ref_type` is `branch` and the branch is created or deleted.
+* `repository` events emit only on `renamed`, with a title and renaming actor attribution.
 * Pull request comments are handled separately from issue comments, so PR comments do not use the issue comment embed template.
 * Closed issues and pull requests do not repeat the original issue/PR body as a description.
 * Star/watch events only emit on `starred` actions and are otherwise ignored.
