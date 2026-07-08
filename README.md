@@ -1,4 +1,4 @@
-# Kyouroga-Bridge-Git
+# KyouLink
 
 A secure GitHub → Discord webhook bridge logic library redesigned for Cloudflare Worker compatibility.
 
@@ -26,8 +26,8 @@ A secure GitHub → Discord webhook bridge logic library redesigned for Cloudfla
 Clone the repository:
 
 ```bash
-git clone https://github.com/Kyouroga/Kyouroga-Bridge-Git.git
-cd Kyouroga-Bridge-Git
+git clone https://github.com/Kyouroga/KyouLink.git
+cd KyouLink
 ```
 
 Install dependencies:

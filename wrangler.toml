@@ -1,6 +1,6 @@
 # Wrangler configuration for Cloudflare Workers
 # Fill `account_id` or pass it via `--account-id` when deploying.
-name = "kyouroga-bridge-git"
+name = "kyoulink"
 main = "src/worker.js"
 compatibility_date = "2026-07-07"
 workers_dev = true
