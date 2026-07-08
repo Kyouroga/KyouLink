@@ -1,41 +1,4 @@
-import * as COLORS from '../utils/colors.js';
 import { getBranchName } from '../utils/formatters.js';
-
-const EVENT_COLOR_MAP = {
-    push: COLORS.PUSH,
-    fork: COLORS.FORK,
-    issues: COLORS.ISSUE_OPENED,
-    issue_comment: COLORS.ISSUE_COMMENT,
-    pull_request: COLORS.PR_OPENED,
-    pull_request_review: COLORS.REVIEW,
-    pull_request_review_comment: COLORS.REVIEW_COMMENT,
-    release: COLORS.RELEASE,
-    discussion: COLORS.DISCUSSION,
-    watch: COLORS.STAR,
-    star: COLORS.STAR
-};
-
-function getEventColor(event = '', action = '') {
-    const normalized = String(event).toLowerCase();
-    const actionValue = String(action).toLowerCase();
-
-    switch (normalized) {
-        case 'issues':
-            if (actionValue === 'closed') return COLORS.ISSUE_CLOSED;
-            if (actionValue === 'reopened') return COLORS.ISSUE_REOPENED;
-            return COLORS.ISSUE_OPENED;
-        case 'pull_request':
-            if (actionValue === 'closed') return COLORS.PR_CLOSED;
-            if (actionValue === 'reopened') return COLORS.PR_REOPENED;
-            return COLORS.PR_OPENED;
-        case 'pull_request_review':
-            if (actionValue === 'approved') return 0x2ECC71;
-            if (actionValue === 'changes_requested') return 0xE74C3C;
-            return COLORS.REVIEW;
-        default:
-            return EVENT_COLOR_MAP[normalized] || COLORS.FORK;
-    }
-}
 
 function getSender(payload) {
     return (
@@ -64,6 +27,8 @@ function normalizeAction(event, action) {
 }
 
 function getTitle(payload, event, action) {
+    const sender = getSender(payload);
+    const senderName = sender.login || sender.name || sender.username || 'GitHub';
     const repoName =
         payload.repository?.full_name ||
         payload.repository?.name ||
@@ -72,6 +37,9 @@ function getTitle(payload, event, action) {
         'Repository';
 
     const normalizedAction = normalizeAction(event, action);
+    const actionText = String(normalizedAction || event || 'updated')
+        .replace(/_/g, ' ')
+        .trim();
 
     if (
         event === 'push' &&
@@ -85,39 +53,40 @@ function getTitle(payload, event, action) {
             ? 'created'
             : 'updated';
 
-        return `[${repoName}] New branch ${branchAction}: ${branch || 'unknown'}`;
+        return `${senderName} ${branchAction} branch ${branch || 'unknown'} in ${repoName}`;
     }
 
-    if (
-        event === 'watch' ||
-        event === 'star'
-    ) {
-        return `[${repoName}] Repository ${normalizedAction}`;
+    if (event === 'watch' || event === 'star') {
+        return `${senderName} starred repository ${repoName}`;
     }
 
-    const subject =
-        payload.issue?.number
+    if (payload.issue?.number) {
+        return `${senderName} ${actionText} issue #${payload.issue.number} in ${repoName}`;
+    }
+
+    if (payload.pull_request?.number) {
+        return `${senderName} ${actionText} PR #${payload.pull_request.number} in ${repoName}`;
+    }
+
+    if (payload.release?.tag_name || payload.release?.name) {
+        const releaseLabel = payload.release?.tag_name || payload.release?.name;
+        return `${senderName} ${actionText} release ${releaseLabel} in ${repoName}`;
+    }
+
+    if (payload.discussion?.title) {
+        return `${senderName} ${actionText} discussion "${payload.discussion.title}" in ${repoName}`;
+    }
+
+    if (payload.comment?.html_url) {
+        const target = payload.issue?.number
             ? `issue #${payload.issue.number}`
             : payload.pull_request?.number
             ? `PR #${payload.pull_request.number}`
-            : payload.release?.tag_name || payload.release?.name
-            ? `release ${payload.release.tag_name || payload.release.name}`
-            : payload.discussion?.title
-            ? 'discussion'
-            : payload.comment?.html_url
-            ? 'comment'
-            : '';
-
-    const actionText = String(normalizedAction || event || 'updated')
-        .replace(/_/g, ' ')
-        .trim();
-
-    const titleParts = [`[${repoName}]`, actionText];
-    if (subject) {
-        titleParts.push(`(${subject})`);
+            : 'thread';
+        return `${senderName} ${actionText} comment on ${target} in ${repoName}`;
     }
 
-    return titleParts.filter(Boolean).join(' ').trim();
+    return `${senderName} ${actionText} in ${repoName}`;
 }
 
 function getUrl(payload) {
@@ -127,10 +96,30 @@ function getUrl(payload) {
         payload.pull_request?.html_url ||
         payload.release?.html_url ||
         payload.discussion?.html_url ||
-        payload.compare ||
         payload.repository?.html_url ||
         undefined
     );
+}
+
+function isBranchLifecycleEvent(payload, event) {
+    return (
+        event === 'push' &&
+        payload.ref_type === 'branch' &&
+        (payload.created || payload.deleted)
+    );
+}
+
+function isIgnoredEvent(event) {
+    const ignoredEvents = new Set([
+        'workflow_run',
+        'workflow_job',
+        'workflow_dispatch',
+        'check_run',
+        'check_suite',
+        'status'
+    ]);
+
+    return ignoredEvents.has(String(event).toLowerCase());
 }
 
 export default function buildGenericEmbed(payload, event) {
@@ -146,12 +135,19 @@ export default function buildGenericEmbed(payload, event) {
         return null;
     }
 
+    if (isIgnoredEvent(event)) {
+        return null;
+    }
+
     const title = getTitle(payload, event, action);
     const url = getUrl(payload);
-
-    return {
-        color: getEventColor(event, action),
-        title,
-        url
+    const embed = {
+        title
     };
+
+    if (url && !isBranchLifecycleEvent(payload, event)) {
+        embed.url = url;
+    }
+
+    return embed;
 };
