@@ -108,8 +108,8 @@ Repository > Settings > Webhooks > Add webhook
 * `push` branch creation and deletion events emit minimal title-only embeds when `ref_type` is `branch` and the branch is created or deleted.
 * Pull request comments are handled separately from issue comments, so PR comments do not use the issue comment embed template.
 * Closed issues and pull requests do not repeat the original issue/PR body as a description.
-* Star/watch events only emit when the action is a `started`/`starred` event and are otherwise ignored.
-* Generic/unhandled events fall back to a custom embed message with a title and metadata, without producing duplicate or repetitive payload details.
+* Star/watch events only emit on `starred` actions and are otherwise ignored.
+* Generic/unhandled events fall back to a title-only embed without extra metadata fields or description.
 
 ---
 
