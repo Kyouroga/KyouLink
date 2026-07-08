@@ -105,9 +105,11 @@ Repository > Settings > Webhooks > Add webhook
 
 ## Embed behavior
 
-* `push` branch creation and deletion events emit minimal title-only embeds whenever `ref_type` is `branch` and the branch is created or deleted.
+* `push` branch creation and deletion events emit minimal title-only embeds when `ref_type` is `branch` and the branch is created or deleted.
 * Pull request comments are handled separately from issue comments, so PR comments do not use the issue comment embed template.
-* Generic/unhandled events fall back to a custom embed message with a title, description, and helpful metadata.
+* Closed issues and pull requests do not repeat the original issue/PR body as a description.
+* Star/watch events only emit when the action is a `started`/`starred` event and are otherwise ignored.
+* Generic/unhandled events fall back to a custom embed message with a title and metadata, without producing duplicate or repetitive payload details.
 
 ---
 
@@ -160,8 +162,9 @@ npx wrangler deploy --env production
 
 ### GitHub Actions deploy
 
-A workflow file is included at `.github/workflows/deploy.yml`.
-The workflow runs on pushes and pull requests targeting `main` and publishes the Worker automatically.
+The repository includes two workflows:
+- `.github/workflows/pr.yml` for pull request validation
+- `.github/workflows/deploy.yml` for manual Worker deployment via GitHub Actions
 
 Required GitHub repository secrets:
 - `CF_API_TOKEN` — Cloudflare API token with Workers publish permissions
