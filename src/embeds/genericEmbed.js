@@ -27,6 +27,77 @@
  */
 
 import { getBranchName } from '../utils/formatters.js';
+import * as COLORS from '../utils/colors.js';
+
+function getEventColor(event, action) {
+    const normalizedEvent = String(event || '').toLowerCase();
+    const normalizedAction = String(action || '').toLowerCase();
+
+    if (normalizedEvent === 'push') {
+        return COLORS.PUSH;
+    }
+
+    if (normalizedEvent === 'fork') {
+        return COLORS.FORK;
+    }
+
+    if (normalizedEvent === 'issues') {
+        if (normalizedAction === 'closed') {
+            return COLORS.ISSUE_CLOSED;
+        }
+
+        if (normalizedAction === 'reopened') {
+            return COLORS.ISSUE_REOPENED;
+        }
+
+        return COLORS.ISSUE_OPENED;
+    }
+
+    if (normalizedEvent === 'issue_comment') {
+        return COLORS.ISSUE_COMMENT;
+    }
+
+    if (normalizedEvent === 'pull_request') {
+        if (normalizedAction === 'closed') {
+            return COLORS.PR_CLOSED;
+        }
+
+        if (normalizedAction === 'reopened') {
+            return COLORS.PR_REOPENED;
+        }
+
+        return COLORS.PR_OPENED;
+    }
+
+    if (normalizedEvent === 'pull_request_review') {
+        return COLORS.REVIEW;
+    }
+
+    if (normalizedEvent === 'pull_request_review_comment') {
+        return COLORS.REVIEW_COMMENT;
+    }
+
+    if (normalizedEvent === 'release') {
+        return COLORS.RELEASE;
+    }
+
+    if (normalizedEvent === 'watch' || normalizedEvent === 'star') {
+        return COLORS.STAR;
+    }
+
+    if (normalizedEvent === 'discussion') {
+        return COLORS.DISCUSSION;
+    }
+
+    return COLORS.PUSH;
+}
+
+function isRepositoryRenameEvent(payload, event, action) {
+    return (
+        String(event || '').toLowerCase() === 'repository' &&
+        String(action || '').toLowerCase() === 'renamed'
+    );
+}
 
 function getSender(payload) {
     return (
@@ -68,6 +139,12 @@ function getTitle(payload, event, action) {
     const actionText = String(normalizedAction || event || 'updated')
         .replace(/_/g, ' ')
         .trim();
+
+    if (isRepositoryRenameEvent(payload, event, action)) {
+        const previousName = payload.changes?.repository?.name?.from || 'unknown';
+        const currentName = payload.repository?.name || repoName;
+        return `${senderName} renamed repository: ${previousName} -> ${currentName}`;
+    }
 
     if (
         event === 'push' &&
@@ -178,6 +255,7 @@ export default function buildGenericEmbed(payload, event) {
     const title = getTitle(payload, event, action);
     const url = getUrl(payload);
     const sender = getSender(payload);
+    const repositoryRenameEvent = isRepositoryRenameEvent(payload, event, action);
 
     const embed = {
         color: getEventColor(event, action),
@@ -189,7 +267,7 @@ export default function buildGenericEmbed(payload, event) {
         title
     };
 
-    if (url && !isBranchLifecycleEvent(payload, event)) {
+    if (url && !isBranchLifecycleEvent(payload, event) && !repositoryRenameEvent) {
         embed.url = url;
     }
 

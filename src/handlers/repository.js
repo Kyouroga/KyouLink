@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2026 Kyouroga. https://kyouroga.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,25 +26,21 @@
  * see CONTRIBUTING.md in the project root.
  */
 
-// Handle pull request review comments and send review comment embeds.
+// Handle repository events and emit rename notifications.
 import { sendEmbed } from '../services/discord.js';
 
-import buildEmbed from '../embeds/reviewCommentEmbed.js';
+import buildEmbed from '../embeds/genericEmbed.js';
 
 export default async (payload, env = {}) => {
-    if (
-        payload.action !==
-        "created"
-    ) {
+    if (payload.action !== 'renamed') {
         return;
     }
 
-    const embed =
-        buildEmbed(payload);
+    const embed = buildEmbed(payload, 'repository');
+
+    if (!embed) {
+        return;
+    }
 
     await sendEmbed(embed, undefined, env);
 };
-
-
-
-

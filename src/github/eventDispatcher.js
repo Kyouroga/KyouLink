@@ -36,6 +36,7 @@ import pullRequestHandler from "../handlers/pullRequest.js";
 import pullRequestReviewCommentHandler from "../handlers/pullRequestReviewComment.js";
 import pullRequestReviewHandler from "../handlers/pullRequestReview.js";
 import pushHandler from "../handlers/push.js";
+import repositoryHandler from "../handlers/repository.js";
 import releaseHandler from "../handlers/release.js";
 
 const handlers = {
@@ -46,6 +47,7 @@ const handlers = {
     pull_request: pullRequestHandler,
     pull_request_review: pullRequestReviewHandler,
     pull_request_review_comment: pullRequestReviewCommentHandler,
+    repository: repositoryHandler,
     release: releaseHandler,
     discussion: discussionHandler
 };
