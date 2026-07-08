@@ -19,23 +19,10 @@ function buildBranchEmbed(payload) {
         ? "created"
         : "updated";
 
-    const title =
-        `[${repo}] Branch ${action}: ${branch || "unknown"}`;
-
-    const embed = {
+    return {
         color: COLORS.PUSH,
-        title
+        title: `[${repo}] New branch ${action}: ${branch || "unknown"}`
     };
-
-    if (payload.created && payload.head_commit?.message) {
-        embed.description = payload.head_commit.message;
-    }
-
-    if (payload.compare) {
-        embed.url = payload.compare;
-    }
-
-    return embed;
 }
 
 export default payload => {
@@ -66,6 +53,10 @@ export default payload => {
 
     const commitCount =
         commits.length;
+
+    if (commitCount === 0) {
+        return null;
+    }
 
     return {
         color: COLORS.PUSH,
