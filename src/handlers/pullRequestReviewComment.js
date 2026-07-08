@@ -28,7 +28,6 @@
 
 // Handle pull request review comments and send review comment embeds.
 import { sendEmbed } from '../services/discord.js';
-import { sendEmbed } from '../services/discord.js';
 
 import buildEmbed from '../embeds/reviewCommentEmbed.js';
 
