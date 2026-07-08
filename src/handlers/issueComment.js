@@ -19,8 +19,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * Project: Kyouroga Bridge Git
- * Repository: https://github.com/Kyouroga/Kyouroga-Bridge-Git
+ * Project: KyouLink
+ * Repository: https://github.com/Kyouroga/KyouLink
  *
  * For contribution guidelines, coding standards, and the pull request process,
  * see CONTRIBUTING.md in the project root.

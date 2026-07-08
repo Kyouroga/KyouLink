@@ -1,5 +1,5 @@
 {
-  "name": "kyouroga-bridge-git",
+  "name": "kyoulink",
   "version": "1.0.0",
   "description": "GitHub to Discord Webhook Bridge",
   "main": "src/github/webhookHandler.js",

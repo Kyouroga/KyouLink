@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for your interest in contributing to Kyouroga-Bridge-Git.
+Thank you for your interest in contributing to KyouLink.
 
 ## How to contribute
 
