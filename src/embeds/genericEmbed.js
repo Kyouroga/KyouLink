@@ -1,3 +1,31 @@
+/*
+ * Copyright (c) 2026 Kyouroga. https://kyouroga.org
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * Ptoject:: Kyourog Bridge Gita Bridge Git
+ * Reposptory:itory: https://github.com/Kyouroga/Kyouroga-Bridge-Git
+ *
+ * For contribution guidelines, coding standards, and the pull request process,
+ * see CONTRIBUTING.md in the project root.
+ */
+
 import { getBranchName } from '../utils/formatters.js';
 
 function getSender(payload) {
@@ -53,7 +81,15 @@ function getTitle(payload, event, action) {
             ? 'created'
             : 'updated';
 
-        return `${senderName} ${branchAction} branch ${branch || 'unknown'} in ${repoName}`;
+        if (branchAction === 'created') {
+            return `[${repoName}] New branch created: ${branch || 'unknown'}`;
+        }
+
+        if (branchAction === 'deleted') {
+            return `[${repoName}] branch deleted: ${branch || 'unknown'}`;
+        }
+
+        return `[${repoName}] Branch ${branchAction}: ${branch || 'unknown'}`;
     }
 
     if (event === 'watch' || event === 'star') {
@@ -141,7 +177,15 @@ export default function buildGenericEmbed(payload, event) {
 
     const title = getTitle(payload, event, action);
     const url = getUrl(payload);
+    const sender = getSender(payload);
+
     const embed = {
+        color: getEventColor(event, action),
+        author: {
+            name: sender.login || sender.name || sender.username || 'GitHub',
+            url: sender.html_url,
+            icon_url: sender.avatar_url
+        },
         title
     };
 
@@ -151,3 +195,4 @@ export default function buildGenericEmbed(payload, event) {
 
     return embed;
 };
+
