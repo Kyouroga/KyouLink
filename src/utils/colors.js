@@ -1,3 +1,4 @@
+﻿// File purpose: Provide Discord embed color constants for different event types.
 export const FORK = 0x95A5A6;
 export const PUSH = 0x3498DB;
 export const ISSUE_OPENED = 0xE67E22;
@@ -13,3 +14,8 @@ export const REVIEW_COMMENT = 0x16A085;
 export const RELEASE = 0xF1C40F;
 export const STAR = 0xFFD700;
 export const DISCUSSION = 0x7289DA;
+
+
+
+
+

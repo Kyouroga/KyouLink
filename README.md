@@ -109,7 +109,10 @@ Repository > Settings > Webhooks > Add webhook
 * Pull request comments are handled separately from issue comments, so PR comments do not use the issue comment embed template.
 * Closed issues and pull requests do not repeat the original issue/PR body as a description.
 * Star/watch events only emit on `starred` actions and are otherwise ignored.
-* Generic/unhandled events fall back to a descriptive title-only embed. Workflow and check events (`workflow_run`, `workflow_job`, `check_run`, `check_suite`, `status`, etc.) are ignored. A link is included only when the event maps to a direct GitHub resource, such as an issue, pull request, release, discussion, or repository.
+* Generic/unhandled events no longer produce embeds. Only explicitly supported events emit Discord notifications.
+* Workflow and check events (`workflow_run`, `workflow_job`, `check_run`, `check_suite`, `status`, etc.) are ignored. Branch create/delete events use a fixed title format and do not include a link:
+  * `[Repo] New branch created: branch-name`
+  * `[Repo] branch deleted: branch-name`
 
 ---
 

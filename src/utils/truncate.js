@@ -1,3 +1,4 @@
+﻿// File purpose: Truncate long text to fit Discord embed limits.
 export default function truncate(text, max = 1024) {;
     if (!text) return "No content provided.";
 
@@ -9,3 +10,8 @@ export default function truncate(text, max = 1024) {;
 
     return cleaned.slice(0, max - 3) + "...";
 };
+
+
+
+
+
