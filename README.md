@@ -53,7 +53,9 @@ The webhook handler is located at `src/github/webhookHandler.js`.
 
 ### Cloudflare Worker
 
-Deploy a Cloudflare Worker that forwards incoming requests to the handler, preserving raw headers, body, and method. Set `GITHUB_SECRET` and `DISCORD_WEBHOOK_URL` as Worker environment variables.
+Deploy a Cloudflare Worker that forwards incoming requests to the handler, preserving raw headers, body, and method. Set `GITHUB_SECRET` and `DISCORD_WEBHOOK_URL` as Worker runtime environment variables.
+
+> Note: defining these values only at build time is not enough. Cloudflare Workers must receive the secret and webhook URL at runtime via Worker variables or Wrangler secrets.
 
 ### Local runtime
 
@@ -92,12 +94,20 @@ Repository > Settings > Webhooks > Add webhook
 * `push`
 * `fork`
 * `issues`
-* `issue_comment`
+* `issue_comment` (includes pull request comments and issue comments)
 * `pull_request`
 * `pull_request_review`
 * `pull_request_review_comment`
 * `release`
 * `discussion`
+
+---
+
+## Embed behavior
+
+* `push` branch creation and deletion events emit minimal title-only embeds whenever `ref_type` is `branch` and the branch is created or deleted.
+* Pull request comments are handled separately from issue comments, so PR comments do not use the issue comment embed template.
+* Generic/unhandled events fall back to a custom embed message with a title, description, and helpful metadata.
 
 ---
 
@@ -147,6 +157,17 @@ This repository is a Worker-only project (no static site). Use the provided `wra
 # If you haven't installed wrangler globally, use npx
 npx wrangler deploy --env production
 ```
+
+### GitHub Actions deploy
+
+A workflow file is included at `.github/workflows/deploy.yml`.
+The workflow runs on pushes and pull requests targeting `main` and publishes the Worker automatically.
+
+Required GitHub repository secrets:
+- `CF_API_TOKEN` — Cloudflare API token with Workers publish permissions
+- `CF_ACCOUNT_ID` — Cloudflare account ID
+
+Note: if you want to publish to a specific route or zone, set `account_id`, `zone_id`, and `route` in `wrangler.toml` or pass `--account-id` on the CLI.
 
 Notes:
 - If Wrangler reports "Could not detect a directory containing static files", you are likely deploying a Pages project. This repo is a Worker; ensure `wrangler.toml` is present and contains no `site` configuration.
