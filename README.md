@@ -109,7 +109,7 @@ Repository > Settings > Webhooks > Add webhook
 * Pull request comments are handled separately from issue comments, so PR comments do not use the issue comment embed template.
 * Closed issues and pull requests do not repeat the original issue/PR body as a description.
 * Star/watch events only emit on `starred` actions and are otherwise ignored.
-* Generic/unhandled events fall back to a title-only embed without extra metadata fields or description.
+* Generic/unhandled events fall back to a descriptive title-only embed. A link is included only when the event maps to a direct GitHub resource, such as an issue, pull request, release, discussion, or repository; branch create/delete events are title-only without a link.
 
 ---
 
