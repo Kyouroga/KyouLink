@@ -1,5 +1,4 @@
 import * as COLORS from '../utils/colors.js';
-import truncate from '../utils/truncate.js';
 import { getBranchName } from '../utils/formatters.js';
 
 const EVENT_COLOR_MAP = {
@@ -85,7 +84,7 @@ function formatDescription(payload) {
         pieces.push(String(payload.message));
     }
 
-    return truncate(pieces.join('\n\n'), 1800);
+    return pieces.join('\n\n').slice(0, 1800);
 }
 
 function getSender(payload) {
@@ -120,7 +119,7 @@ function getTitle(payload, event, action) {
             ? 'created'
             : 'updated';
 
-        return `[${repoName}] Branch ${branchAction}: ${branch || 'unknown'}`;
+        return `[${repoName}] New branch ${branchAction}: ${branch || 'unknown'}`;
     }
 
     const subject =
@@ -175,6 +174,17 @@ function addField(fields, name, value, inline = true) {
 
 export default function buildGenericEmbed(payload, event) {
     const action = payload.action || payload.state || payload.ref_type || payload.event || 'updated';
+
+    const normalizedEvent = String(event).toLowerCase();
+    const normalizedAction = String(action).toLowerCase();
+
+    if (
+        (normalizedEvent === 'watch' || normalizedEvent === 'star') &&
+        normalizedAction !== 'started'
+    ) {
+        return null;
+    }
+
     const sender = getSender(payload);
     const title = getTitle(payload, event, action);
     const url = getUrl(payload);
@@ -205,9 +215,11 @@ export default function buildGenericEmbed(payload, event) {
         payload.issue?.number ? `#${payload.issue.number}` : payload.pull_request?.number ? `#${payload.pull_request.number}` : undefined
     );
 
-    const description = formatDescription(payload);
-    if (description) {
-        embed.description = description;
+    if (normalizedAction !== 'closed') {
+        const description = formatDescription(payload);
+        if (description) {
+            embed.description = description;
+        }
     }
 
     return embed;

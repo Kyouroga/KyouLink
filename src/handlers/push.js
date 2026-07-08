@@ -3,8 +3,11 @@ import { sendEmbed } from '../services/discord.js';
 import buildEmbed from '../embeds/pushEmbed.js';
 
 export default async (payload, env = {}) => {
-    const embed =
-        buildEmbed(payload);
+    const embed = buildEmbed(payload);
+
+    if (!embed) {
+        return;
+    }
 
     await sendEmbed(embed, undefined, env);
 };

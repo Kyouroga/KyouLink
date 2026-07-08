@@ -67,10 +67,9 @@ export default payload => {
     };
 
     const description =
-        truncate(
-            issue.body || "",
-            1800
-        );
+        payload.action === "opened"
+            ? truncate(issue.body || "", 1800)
+            : "";
 
     if (
         description &&

@@ -33,5 +33,9 @@ export default async function dispatch(event, payload, env = {}) {
     console.log(`Generic fallback for event: ${event}`);
 
     const embed = buildGenericEmbed(payload, event);
+    if (!embed) {
+        return;
+    }
+
     await sendEmbed(embed, undefined, env);
 };
