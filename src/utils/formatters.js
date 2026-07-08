@@ -1,3 +1,4 @@
+﻿// File purpose: Provide small helper functions for formatting branches and commits.
 import truncate from './truncate.js';
 
 function formatCommitList(commits = []) {
@@ -31,3 +32,8 @@ function getTagName(ref = "") {
 }
 
 export { formatCommitList, getBranchName, getTagName };
+
+
+
+
+
