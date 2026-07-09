@@ -39,6 +39,7 @@ import pushHandler from "../handlers/push.js";
 import repositoryHandler from "../handlers/repository.js";
 import releaseHandler from "../handlers/release.js";
 
+// Map supported GitHub event names to the handlers that build and send embeds.
 const handlers = {
     push: pushHandler,
     fork: forkHandler,
@@ -49,7 +50,9 @@ const handlers = {
     pull_request_review_comment: pullRequestReviewCommentHandler,
     repository: repositoryHandler,
     release: releaseHandler,
-    discussion: discussionHandler
+    discussion: discussionHandler,
+    watch: repositoryHandler,
+    star: repositoryHandler
 };
 
 // Route only supported GitHub events to their dedicated handlers.
