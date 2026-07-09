@@ -33,6 +33,7 @@ import { sendEmbed } from '../services/discord.js';
 import buildEmbed from '../embeds/releaseEmbed.js';
 
 export default async (payload, env = {}) => {
+    // Release notifications are filtered to the actions that actually matter.
     const action =
         payload.action;
 

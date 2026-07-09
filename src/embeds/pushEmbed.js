@@ -77,6 +77,7 @@ export default payload => {
             payload.ref || ""
         );
 
+    // Use the user who pushed the commits as the embed author for normal push events.
     const sender =
         payload.sender || {};
 

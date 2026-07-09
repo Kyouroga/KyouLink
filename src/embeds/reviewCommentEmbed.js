@@ -31,6 +31,7 @@ import * as COLORS from '../utils/colors.js';
 import truncate from '../utils/truncate.js';
 
 export default payload => {
+    // Review comment embeds use the repository, PR, and comment payload together.
     const repo =
         payload.repository || {};
 
@@ -40,8 +41,9 @@ export default payload => {
     const comment =
         payload.comment || {};
 
+    // The review comment author is the actor for this event and should be shown as the author.
     const user =
-        comment.user || {};
+        comment.user || payload.sender || {};
 
     const embed = {
         color:

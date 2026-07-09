@@ -18,38 +18,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- *
- * Project: KyouLink
- * Repository: https://github.com/Kyouroga/KyouLink
- *
- * For contribution guidelines, coding standards, and the pull request process,
- * see CONTRIBUTING.md in the project root.
  */
 
-// Handle repository events and emit generic embed notifications for rename and star actions.
+// Handle repository star/watch events and emit Discord embeds.
 import { sendEmbed } from '../services/discord.js';
-
 import buildEmbed from '../embeds/genericEmbed.js';
 
 export default async (payload, env = {}) => {
-    // Repository events are reused for rename and star/watch-style actions.
-    const event = payload.action === 'renamed'
-        ? 'repository'
-        : payload.action === 'started'
-        ? 'watch'
-        : null;
-
-    if (!event) {
-        return null;
-    }
-
-    const embed = buildEmbed(payload, event);
+    const embed = buildEmbed(payload, 'watch');
 
     if (!embed) {
-        return null;
+        return;
     }
 
     await sendEmbed(embed, undefined, env);
-
-    return embed;
 };

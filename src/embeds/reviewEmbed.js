@@ -32,6 +32,7 @@ import * as COLORS from '../utils/colors.js';
 import truncate from '../utils/truncate.js';
 
 export default payload => {
+    // Review embeds are built from the repository, PR, and review payload fields.
     const repo =
         payload.repository || {};
 
@@ -41,8 +42,9 @@ export default payload => {
     const pr =
         payload.pull_request || {};
 
+    // The reviewer who submitted the review should be the author shown in the embed.
     const user =
-        review.user || {};
+        review.user || payload.sender || {};
 
     const state =
         (review.state || "")

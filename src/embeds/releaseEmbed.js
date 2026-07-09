@@ -32,15 +32,17 @@ import * as COLORS from '../utils/colors.js';
 import truncate from '../utils/truncate.js';
 
 export default payload => {
+    // Release embeds combine the repository context with the release details.
     const repo =
         payload.repository || {};
 
     const release =
         payload.release || {};
 
+    // Prefer the actor who published the release as the embed author, falling back to the release author object when needed.
     const user =
-        release.author ||
         payload.sender ||
+        release.author ||
         {};
 
     const title =

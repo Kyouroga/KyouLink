@@ -31,6 +31,7 @@ import { sendEmbed } from '../services/discord.js';
 import buildEmbed from '../embeds/reviewEmbed.js';
 
 export default async (payload, env = {}) => {
+    // Review events are only useful when they include a valid review payload.
     if (
         payload.action !==
         "submitted"
