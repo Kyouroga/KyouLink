@@ -32,6 +32,7 @@ import * as COLORS from '../utils/colors.js';
 import truncate from '../utils/truncate.js';
 
 export default payload => {
+    // Release embeds combine the repository context with the release details.
     const repo =
         payload.repository || {};
 
