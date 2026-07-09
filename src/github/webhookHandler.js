@@ -93,7 +93,7 @@ function getRawBodyBuffer(rawBody) {
     return null;
 }
 
-async function handleGithubWebhook({ method, headers, rawBody, parsedBody, env = {}, url }) {
+async function handleGithubWebhook({ method, headers, rawBody, parsedBody, env = {}, url, dispatchFn }) {
     const verb = String(method || '').toUpperCase();
 
     // Simple health check for browser/uptime probes
@@ -144,6 +144,7 @@ async function handleGithubWebhook({ method, headers, rawBody, parsedBody, env =
         });
     }
 
+    // Normalize headers so the handler can read GitHub values consistently.
     const normalizedHeaders = normalizeHeaders(headers);
 
     const contentType = getHeaderValue(normalizedHeaders, 'content-type') || '';
@@ -214,7 +215,8 @@ async function handleGithubWebhook({ method, headers, rawBody, parsedBody, env =
     const normalizedEvent = String(event).trim();
 
     try {
-        await dispatch(normalizedEvent, payload, env);
+        const dispatcher = typeof dispatchFn === 'function' ? dispatchFn : dispatch;
+        await dispatcher(normalizedEvent, payload, env);
     } catch (err) {
         console.error('Error dispatching event:', err && err.stack ? err.stack : err);
         return buildResponse(500, {
