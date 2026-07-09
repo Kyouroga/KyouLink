@@ -32,6 +32,7 @@ import * as COLORS from '../utils/colors.js';
 import truncate from '../utils/truncate.js';
 
 export default payload => {
+    // Pull the issue payload into a local object so the embed logic stays readable.
     const issue =
         payload.issue || {};
 
