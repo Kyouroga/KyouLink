@@ -31,6 +31,7 @@ import * as COLORS from '../utils/colors.js';
 import truncate from '../utils/truncate.js';
 
 export default payload => {
+    // Review comment embeds use the repository, PR, and comment payload together.
     const repo =
         payload.repository || {};
 
