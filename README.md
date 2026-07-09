@@ -2,18 +2,12 @@
 
 A secure GitHub → Discord webhook bridge logic library redesigned for Cloudflare Worker compatibility.
 
-## Quick links
-
-| Section | Purpose |
-| --- | --- |
-| [Setup](#setup) | Install and configure the project |
-| [Testing](docs/testing.md) | Run the regression suite locally |
-| [Deployment](docs/deployment.md) | Deploy to Cloudflare Workers |
-| [Supported events](docs/events.md) | See which GitHub events are handled |
-| [Security](docs/security.md) | Review secret handling and protection |
+- [Setup](#setup): Install and configure the project
+- [Testing](docs/testing.md): Run the regression suite locally
+- [Deployment](docs/deployment.md): Deploy to Cloudflare Workers
+- [Security](docs/security.md): Review secret handling and protection
 
 ## Setup
-
 1. Clone the repository.
 2. Install dependencies.
 3. Add your runtime secrets.
@@ -23,7 +17,6 @@ git clone https://github.com/Kyouroga/KyouLink.git
 cd KyouLink
 npm install
 ```
-
 ### Required environment values
 
 | Name | Purpose |
@@ -65,7 +58,18 @@ This project is designed for Cloudflare Workers. Use [docs/deployment.md](docs/d
 
 ## Supported events
 
-See [docs/events.md](docs/events.md) for the full list.
+| Event | Notes |
+| --- | --- |
+| push | Handles branch-related updates and push notifications |
+| fork | Sends a Discord notification when a repository is forked |
+| issues | Covers issue opened, closed, and related updates |
+| issue_comment | Supports comments on issues |
+| pull_request | Handles pull request lifecycle updates |
+| pull_request_review | Covers review activity |
+| pull_request_review_comment | Supports review comment notifications |
+| release | Sends release-related notifications |
+| repository | Covers repository-level actions such as rename events |
+| discussion | Sends discussion updates to Discord |
 
 ## Security
 
