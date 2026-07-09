@@ -31,6 +31,7 @@ import { sendEmbed } from '../services/discord.js';
 import buildEmbed from '../embeds/issueEmbed.js';
 
 export default async (payload, env = {}) => {
+    // Only a small set of issue actions should create Discord notifications.
     const action =
         payload.action;
 
