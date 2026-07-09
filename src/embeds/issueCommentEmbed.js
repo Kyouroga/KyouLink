@@ -40,8 +40,9 @@ export default payload => {
     const comment =
         payload.comment || {};
 
+    // The comment author is the actor for this event, so prefer the comment user directly.
     const user =
-        comment.user || {};
+        comment.user || payload.sender || {};
 
     const embed = {
         color:

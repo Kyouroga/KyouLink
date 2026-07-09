@@ -39,9 +39,10 @@ export default payload => {
     const release =
         payload.release || {};
 
+    // Prefer the actor who published the release as the embed author, falling back to the release author object when needed.
     const user =
-        release.author ||
         payload.sender ||
+        release.author ||
         {};
 
     const title =

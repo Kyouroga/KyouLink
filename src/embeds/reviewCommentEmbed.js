@@ -41,8 +41,9 @@ export default payload => {
     const comment =
         payload.comment || {};
 
+    // The review comment author is the actor for this event and should be shown as the author.
     const user =
-        comment.user || {};
+        comment.user || payload.sender || {};
 
     const embed = {
         color:

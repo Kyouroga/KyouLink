@@ -38,11 +38,12 @@ export default payload => {
 
     // For closed and reopened actions, the event sender is the actor who changed
     // the issue state, so attribute the embed author accordingly.
+    // Use the current event actor for close/reopen actions and fall back to the issue author otherwise.
     const user =
         payload.action === 'closed' ||
         payload.action === 'reopened'
             ? payload.sender || issue.user || {}
-            : issue.user || payload.sender || {};
+            : payload.sender || issue.user || {};
 
     const repo =
         payload.repository || {};

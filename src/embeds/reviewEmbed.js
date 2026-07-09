@@ -42,8 +42,9 @@ export default payload => {
     const pr =
         payload.pull_request || {};
 
+    // The reviewer who submitted the review should be the author shown in the embed.
     const user =
-        review.user || {};
+        review.user || payload.sender || {};
 
     const state =
         (review.state || "")

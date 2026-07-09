@@ -30,6 +30,7 @@
 import * as COLORS from '../utils/colors.js';
 
 export default payload => {
+    // The fork event is triggered by the user who created the fork, so use them as the author.
     const sender =
         payload.sender || {};
 

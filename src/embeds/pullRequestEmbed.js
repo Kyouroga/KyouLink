@@ -41,11 +41,12 @@ export default payload => {
         {};
 
     // For PR reopen/close actions, use the actor as the embed author.
+    // Prefer the current event actor for PR lifecycle actions and only use the PR author as a fallback.
     const user =
         payload.action === 'closed' ||
         payload.action === 'reopened'
             ? payload.sender || pr.user || {}
-            : pr.user || payload.sender || {};
+            : payload.sender || pr.user || {};
 
     let color =
         COLORS.PR_OPENED;

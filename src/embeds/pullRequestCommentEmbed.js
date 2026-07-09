@@ -34,7 +34,8 @@ export default payload => {
     const repo = payload.repository || {};
     const issue = payload.issue || {};
     const comment = payload.comment || {};
-    const user = comment.user || {};
+    // Use the person who wrote the PR comment as the embed author.
+    const user = comment.user || payload.sender || {};
 
     const title =
         `[${repo.full_name}] New comment on pull request #${issue.number}: ${issue.title || ''}`.trim();

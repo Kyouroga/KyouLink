@@ -38,9 +38,10 @@ export default payload => {
     const discussion =
         payload.discussion || {};
 
+    // Prefer the actor who created or answered the discussion as the embed author.
     const user =
-        discussion.user ||
         payload.sender ||
+        discussion.user ||
         {};
 
     const action =
