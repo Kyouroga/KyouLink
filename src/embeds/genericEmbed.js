@@ -265,7 +265,14 @@ export default function buildGenericEmbed(payload, event) {
         return null;
     }
 
-    if (isIgnoredEvent(event)) {
+    // Branch lifecycle pushes are handled by the generic embed builder as a fallback,
+    // so they should not be rejected just because the event is a push.
+    const isBranchLifecycle =
+        normalizedEvent === 'push' &&
+        payload.ref_type === 'branch' &&
+        (payload.created || payload.deleted);
+
+    if (isIgnoredEvent(event) && !isBranchLifecycle) {
         // Skip events that are intentionally unsupported by this bridge.
         return null;
     }
