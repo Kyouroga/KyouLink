@@ -31,6 +31,7 @@ import { sendEmbed } from '../services/discord.js';
 import buildEmbed from '../embeds/pullRequestEmbed.js';
 
 export default async (payload, env = {}) => {
+    // PR notifications are limited to the same core lifecycle actions as issues.
     const action =
         payload.action;
 
