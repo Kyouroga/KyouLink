@@ -107,6 +107,40 @@ test('repositoryHandler uses the generic embed for star events', async () => {
     assert.equal(embed.color, COLORS.STAR);
 });
 
+test('buildGenericEmbed creates a title-only embed for branch create and delete events', () => {
+    const createdPayload = {
+        ref: 'refs/heads/feature/test',
+        ref_type: 'branch',
+        created: true,
+        repository: {
+            full_name: 'Kyouroga/KyouLink',
+            html_url: 'https://github.com/Kyouroga/KyouLink'
+        },
+        sender: {
+            login: 'octocat',
+            html_url: 'https://github.com/octocat',
+            avatar_url: 'https://github.com/octocat.png'
+        }
+    };
+
+    const deletedPayload = {
+        ...createdPayload,
+        created: false,
+        deleted: true
+    };
+
+    const createdEmbed = buildGenericEmbed(createdPayload, 'push');
+    const deletedEmbed = buildGenericEmbed(deletedPayload, 'push');
+
+    assert.ok(createdEmbed);
+    assert.equal(createdEmbed.title, '[Kyouroga/KyouLink] New branch created: feature/test');
+    assert.equal(createdEmbed.url, undefined);
+
+    assert.ok(deletedEmbed);
+    assert.equal(deletedEmbed.title, '[Kyouroga/KyouLink] branch deleted: feature/test');
+    assert.equal(deletedEmbed.url, undefined);
+});
+
 test('buildGenericEmbed returns null for ignored events', () => {
     const payload = {
         action: 'requested',
