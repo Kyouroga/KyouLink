@@ -32,6 +32,7 @@ import { sendEmbed } from '../services/discord.js';
 import buildEmbed from '../embeds/reviewCommentEmbed.js';
 
 export default async (payload, env = {}) => {
+    // Review comments need a real comment payload before we build an embed.
     if (
         payload.action !==
         "created"
