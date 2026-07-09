@@ -32,6 +32,7 @@ import buildIssueCommentEmbed from '../embeds/issueCommentEmbed.js';
 import buildPullRequestCommentEmbed from '../embeds/pullRequestCommentEmbed.js';
 
 export default async (payload, env = {}) => {
+    // Only issue comments with a usable comment body should be forwarded.
     if (
         payload.action !==
         "created"
