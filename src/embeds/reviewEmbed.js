@@ -32,6 +32,7 @@ import * as COLORS from '../utils/colors.js';
 import truncate from '../utils/truncate.js';
 
 export default payload => {
+    // Review embeds are built from the repository, PR, and review payload fields.
     const repo =
         payload.repository || {};
 
