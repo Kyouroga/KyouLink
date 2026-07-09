@@ -4,7 +4,10 @@
   "description": "GitHub to Discord Webhook Bridge",
   "main": "src/github/webhookHandler.js",
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "test": "node --test tests/webhookHandler.test.js tests/genericEmbed.test.js",
+    "test:watch": "node --test --watch tests/webhookHandler.test.js tests/genericEmbed.test.js"
+  },
   "keywords": [
     "github",
     "discord",
