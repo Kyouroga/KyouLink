@@ -51,6 +51,21 @@ DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/xxxx
 
 The webhook handler is located at `src/github/webhookHandler.js`.
 
+### Local testing before commit
+
+Run the built-in local test suite before opening a PR or pushing changes:
+
+```bash
+npm test
+```
+
+The test suite covers the real behavior that matters here:
+- webhook signature validation
+- webhook entrypoint handling
+- embed generation for realistic GitHub payloads, including issue events, repository rename events, and starred-repository events
+
+The tests live in the `tests/` folder and are intended to catch regressions in the actual webhook and embed logic before code is committed.
+
 ### Cloudflare Worker
 
 Deploy a Cloudflare Worker that forwards incoming requests to the handler, preserving raw headers, body, and method. Set `GITHUB_SECRET` and `DISCORD_WEBHOOK_URL` as Worker runtime environment variables.
