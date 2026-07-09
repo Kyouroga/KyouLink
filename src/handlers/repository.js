@@ -26,21 +26,30 @@
  * see CONTRIBUTING.md in the project root.
  */
 
-// Handle repository events and emit rename notifications.
+// Handle repository events and emit generic embed notifications for rename and star actions.
 import { sendEmbed } from '../services/discord.js';
 
 import buildEmbed from '../embeds/genericEmbed.js';
 
 export default async (payload, env = {}) => {
-    if (payload.action !== 'renamed') {
-        return;
+    // Repository events are reused for rename and star/watch-style actions.
+    const event = payload.action === 'renamed'
+        ? 'repository'
+        : payload.action === 'started'
+        ? 'watch'
+        : null;
+
+    if (!event) {
+        return null;
     }
 
-    const embed = buildEmbed(payload, 'repository');
+    const embed = buildEmbed(payload, event);
 
     if (!embed) {
-        return;
+        return null;
     }
 
     await sendEmbed(embed, undefined, env);
+
+    return embed;
 };
