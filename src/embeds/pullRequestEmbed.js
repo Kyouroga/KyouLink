@@ -32,6 +32,7 @@ import * as COLORS from '../utils/colors.js';
 import truncate from '../utils/truncate.js';
 
 export default payload => {
+    // Resolve the repository and PR data first, then decide how to describe the action.
     const repo =
         payload.repository || {};
 
