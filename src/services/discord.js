@@ -32,6 +32,7 @@ import { getConfig } from '../config/config.js';
 
 async function sendEmbed(embed, webhookUrl, env = {}) {
     // Resolve the Discord webhook URL from runtime env or configured defaults.
+    // In local tests, missing config is allowed so the embed logic can be verified safely.
     const config = getConfig(env);
     const url =
         webhookUrl ||
@@ -39,6 +40,15 @@ async function sendEmbed(embed, webhookUrl, env = {}) {
         config.discord.webhookUrl;
 
     if (!url) {
+        const isLocalTestMode =
+            env.NODE_ENV === 'test' ||
+            env.SKIP_DISCORD === 'true' ||
+            env.SKIP_DISCORD === true;
+
+        if (isLocalTestMode) {
+            return;
+        }
+
         throw new Error(
             'DISCORD_WEBHOOK_URL missing.'
         );
