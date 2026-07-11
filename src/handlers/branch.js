@@ -26,7 +26,7 @@
  * see CONTRIBUTING.md in the project root.
  */
 
-// Handle branch create, delete, and rename notifications with dedicated embed titles.
+// Handle branch create and delete notifications with dedicated embed titles.
 import { sendEmbed } from '../services/discord.js';
 import { getBranchName } from '../utils/formatters.js';
 import * as COLORS from '../utils/colors.js';
@@ -65,25 +65,6 @@ function buildBranchEmbed(payload, eventName) {
                 icon_url: sender.avatar_url
             },
             title: `[${repoName}] branch deleted: ${branch}`
-        };
-    }
-
-    if (eventName === 'rename') {
-        const oldName = payload.changes?.ref?.from || payload.before;
-        const newName = payload.ref || payload.repository?.default_branch;
-
-        if (!oldName || !newName) {
-            return null;
-        }
-
-        return {
-            color: COLORS.PUSH,
-            author: {
-                name: sender.login || sender.name || sender.username || 'GitHub',
-                url: sender.html_url,
-                icon_url: sender.avatar_url
-            },
-            title: `[${repoName}] branch renamed: ${oldName} -> ${newName}`
         };
     }
 
