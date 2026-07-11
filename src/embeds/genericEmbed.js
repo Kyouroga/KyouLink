@@ -70,10 +70,6 @@ function getEventColor(event, action) {
         return COLORS.PR_OPENED;
     }
 
-    if (normalizedEvent === 'pull_request_review') {
-        return COLORS.REVIEW;
-    }
-
     if (normalizedEvent === 'pull_request_review_comment') {
         return COLORS.REVIEW_COMMENT;
     }
