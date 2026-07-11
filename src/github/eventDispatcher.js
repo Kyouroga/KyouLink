@@ -27,6 +27,7 @@
  */
 
 // Route supported GitHub events to their dedicated handlers and fall back to the generic embed builder when needed.
+import branchHandler from "../handlers/branch.js";
 import commitCommentHandler from "../handlers/commitComment.js";
 import discussionHandler from "../handlers/discussion.js";
 import forkHandler from "../handlers/fork.js";
@@ -41,6 +42,8 @@ import releaseHandler from "../handlers/release.js";
 // Map supported GitHub event names to the handlers that build and send embeds.
 const handlers = {
     push: pushHandler,
+    create: (payload, env) => branchHandler(payload, env, 'create'),
+    delete: (payload, env) => branchHandler(payload, env, 'delete'),
     fork: forkHandler,
     issues: issuesHandler,
     issue_comment: issueCommentHandler,
@@ -48,6 +51,7 @@ const handlers = {
     pull_request_review_comment: pullRequestReviewCommentHandler,
     commit_comment: commitCommentHandler,
     repository: repositoryHandler,
+    rename: (payload, env) => branchHandler(payload, env, 'rename'),
     release: releaseHandler,
     discussion: discussionHandler,
     watch: repositoryHandler,

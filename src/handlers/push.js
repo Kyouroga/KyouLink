@@ -31,16 +31,19 @@
 import { sendEmbed } from '../services/discord.js';
 
 import buildPushEmbed from '../embeds/pushEmbed.js';
-import buildGenericEmbed from '../embeds/genericEmbed.js';
+import branchHandler from './branch.js';
 
 export default async (payload, env = {}) => {
     const isBranchLifecycle =
         payload.ref_type === 'branch' &&
         (payload.created || payload.deleted);
 
-    const embed = isBranchLifecycle
-        ? buildGenericEmbed(payload, 'push')
-        : buildPushEmbed(payload);
+    if (isBranchLifecycle) {
+        const eventName = payload.deleted ? 'delete' : 'create';
+        return branchHandler(payload, env, eventName);
+    }
+
+    const embed = buildPushEmbed(payload);
 
     if (!embed) {
         return null;
