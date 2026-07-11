@@ -171,6 +171,8 @@ test('buildGenericEmbed creates a title-only embed for branch create and delete 
 
     const createdEmbed = buildGenericEmbed(createdPayload, 'push');
     const deletedEmbed = buildGenericEmbed(deletedPayload, 'push');
+    const createEventEmbed = buildGenericEmbed(createdPayload, 'create');
+    const deleteEventEmbed = buildGenericEmbed(deletedPayload, 'delete');
 
     assert.ok(createdEmbed);
     assert.equal(createdEmbed.title, '[Kyouroga/KyouLink] New branch created: feature/test');
@@ -179,6 +181,12 @@ test('buildGenericEmbed creates a title-only embed for branch create and delete 
     assert.ok(deletedEmbed);
     assert.equal(deletedEmbed.title, '[Kyouroga/KyouLink] branch deleted: feature/test');
     assert.equal(deletedEmbed.url, undefined);
+
+    assert.ok(createEventEmbed);
+    assert.equal(createEventEmbed.title, '[Kyouroga/KyouLink] New branch created: feature/test');
+
+    assert.ok(deleteEventEmbed);
+    assert.equal(deleteEventEmbed.title, '[Kyouroga/KyouLink] branch deleted: feature/test');
 });
 
 test('commitCommentHandler emits a commit comment embed', async () => {

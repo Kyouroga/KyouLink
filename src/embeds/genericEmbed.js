@@ -150,7 +150,7 @@ function getTitle(payload, event, action) {
 
     if (
         // Branch create/delete pushes are rendered as a simpler, fixed-format title.
-        event === 'push' &&
+        (event === 'push' || event === 'create' || event === 'delete') &&
         payload.ref_type === 'branch' &&
         (payload.created || payload.deleted)
     ) {
@@ -225,8 +225,9 @@ function getUrl(payload) {
 
 function isBranchLifecycleEvent(payload, event) {
     // Branch create/delete events intentionally keep the title-only format without a URL.
+    const normalizedEvent = String(event || '').toLowerCase();
     return (
-        event === 'push' &&
+        (normalizedEvent === 'push' || normalizedEvent === 'create' || normalizedEvent === 'delete') &&
         payload.ref_type === 'branch' &&
         (payload.created || payload.deleted)
     );
@@ -263,10 +264,7 @@ export default function buildGenericEmbed(payload, event) {
 
     // Branch lifecycle pushes are handled by the generic embed builder as a fallback,
     // so they should not be rejected just because the event is a push.
-    const isBranchLifecycle =
-        normalizedEvent === 'push' &&
-        payload.ref_type === 'branch' &&
-        (payload.created || payload.deleted);
+    const isBranchLifecycle = isBranchLifecycleEvent(payload, event);
 
     if (isIgnoredEvent(event) && !isBranchLifecycle) {
         // Skip events that are intentionally unsupported by this bridge.
