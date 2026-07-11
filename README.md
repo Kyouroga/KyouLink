@@ -60,13 +60,14 @@ This project is designed for Cloudflare Workers. Use [docs/deployment.md](docs/d
 
 | Event | Notes |
 | --- | --- |
-| push | Handles branch-related updates and push notifications |
+| push | Handles branch-related updates and push notifications with commit-author attribution |
 | fork | Sends a Discord notification when a repository is forked |
 | issues | Covers issue opened, closed, and related updates |
 | issue_comment | Supports comments on issues |
 | pull_request | Handles pull request lifecycle updates |
 | pull_request_review | Covers review activity |
 | pull_request_review_comment | Supports review comment notifications |
+| commit_comment | Sends commit-comment notifications that mirror the review-comment experience |
 | release | Sends release-related notifications |
 | repository | Covers repository-level actions such as rename events |
 | discussion | Sends discussion updates to Discord |

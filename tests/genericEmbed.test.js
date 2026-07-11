@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import buildGenericEmbed from '../src/embeds/genericEmbed.js';
+import buildPushEmbed from '../src/embeds/pushEmbed.js';
+import commitCommentHandler from '../src/handlers/commitComment.js';
 import repositoryHandler from '../src/handlers/repository.js';
 import * as COLORS from '../src/utils/colors.js';
 
@@ -107,6 +109,43 @@ test('repositoryHandler uses the generic embed for star events', async () => {
     assert.equal(embed.color, COLORS.STAR);
 });
 
+test('buildPushEmbed uses the commit author for normal push notifications', () => {
+    const payload = {
+        ref: 'refs/heads/main',
+        repository: {
+            full_name: 'Kyouroga/KyouLink',
+            html_url: 'https://github.com/Kyouroga/KyouLink'
+        },
+        sender: {
+            login: 'octocat',
+            html_url: 'https://github.com/octocat',
+            avatar_url: 'https://github.com/octocat.png'
+        },
+        head_commit: {
+            author: {
+                name: 'Ada Lovelace',
+                username: 'ada'
+            }
+        },
+        commits: [
+            {
+                id: 'abc1234',
+                message: 'feat: ship a new widget',
+                author: {
+                    name: 'Ada Lovelace',
+                    username: 'ada'
+                }
+            }
+        ]
+    };
+
+    const embed = buildPushEmbed(payload);
+
+    assert.ok(embed);
+    assert.equal(embed.author.name, 'Ada Lovelace');
+    assert.equal(embed.title, '[Kyouroga/KyouLink:main] 1 new commit');
+});
+
 test('buildGenericEmbed creates a title-only embed for branch create and delete events', () => {
     const createdPayload = {
         ref: 'refs/heads/feature/test',
@@ -139,6 +178,37 @@ test('buildGenericEmbed creates a title-only embed for branch create and delete 
     assert.ok(deletedEmbed);
     assert.equal(deletedEmbed.title, '[Kyouroga/KyouLink] branch deleted: feature/test');
     assert.equal(deletedEmbed.url, undefined);
+});
+
+test('commitCommentHandler emits a commit comment embed', async () => {
+    const payload = {
+        action: 'created',
+        comment: {
+            body: 'Looks good to me',
+            html_url: 'https://github.com/Kyouroga/KyouLink/commit/abc1234#r1',
+            commit_id: 'abc1234',
+            user: {
+                login: 'octocat',
+                html_url: 'https://github.com/octocat',
+                avatar_url: 'https://github.com/octocat.png'
+            }
+        },
+        repository: {
+            full_name: 'Kyouroga/KyouLink',
+            html_url: 'https://github.com/Kyouroga/KyouLink'
+        },
+        sender: {
+            login: 'octocat',
+            html_url: 'https://github.com/octocat',
+            avatar_url: 'https://github.com/octocat.png'
+        }
+    };
+
+    const embed = await commitCommentHandler(payload, { NODE_ENV: 'test' });
+
+    assert.ok(embed);
+    assert.equal(embed.title, '[Kyouroga/KyouLink] Commit Comment on abc1234');
+    assert.equal(embed.author.name, 'octocat');
 });
 
 test('buildGenericEmbed returns null for ignored events', () => {

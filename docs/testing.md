@@ -12,7 +12,7 @@ npm test
 | --- | --- |
 | Signature validation | Verifies that valid GitHub signatures are accepted |
 | Webhook handling | Confirms the webhook entrypoint routes requests correctly |
-| Embed generation | Checks that GitHub-like payloads produce the expected Discord embeds |
+| Embed generation | Checks that GitHub-like payloads produce the expected Discord embeds, including commit-author attribution and branch lifecycle titles |
 
 ## Recommended workflow
 

@@ -28,6 +28,7 @@
 
 // Route supported GitHub events to their dedicated handlers.
 // Notes: Generic fallback is disabled so unknown events do not emit embeds.
+import commitCommentHandler from "../handlers/commitComment.js";
 import discussionHandler from "../handlers/discussion.js";
 import forkHandler from "../handlers/fork.js";
 import issueCommentHandler from "../handlers/issueComment.js";
@@ -46,6 +47,7 @@ const handlers = {
     issue_comment: issueCommentHandler,
     pull_request: pullRequestHandler,
     pull_request_review_comment: pullRequestReviewCommentHandler,
+    commit_comment: commitCommentHandler,
     repository: repositoryHandler,
     release: releaseHandler,
     discussion: discussionHandler,
