@@ -26,3 +26,7 @@ npx wrangler deploy --env production
 ## CI deployment
 
 The repository workflow can deploy automatically once the required secrets are configured in GitHub.
+
+## Generic fallback behavior
+
+Branch create/delete events and other compatible fallback payloads now route through the generic embed path so they still produce a Discord notification when a dedicated embed is not available.
