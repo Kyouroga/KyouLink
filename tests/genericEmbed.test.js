@@ -109,7 +109,7 @@ test('repositoryHandler uses the generic embed for star events', async () => {
     assert.equal(embed.color, COLORS.STAR);
 });
 
-test('buildPushEmbed uses the commit author for normal push notifications', () => {
+test('buildPushEmbed uses the pusher as the author for normal push notifications', () => {
     const payload = {
         ref: 'refs/heads/main',
         repository: {
@@ -142,7 +142,7 @@ test('buildPushEmbed uses the commit author for normal push notifications', () =
     const embed = buildPushEmbed(payload);
 
     assert.ok(embed);
-    assert.equal(embed.author.name, 'Ada Lovelace');
+    assert.equal(embed.author.name, 'octocat');
     assert.equal(embed.title, '[Kyouroga/KyouLink:main] 1 new commit');
 });
 

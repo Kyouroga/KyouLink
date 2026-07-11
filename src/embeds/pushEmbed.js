@@ -80,12 +80,12 @@ export default payload => {
     const commits =
         payload.commits || [];
 
-    // Prefer the commit author when available so push notifications reflect who wrote the change.
+    // Use the person who triggered the push as the embed author for normal push events.
     const sender =
+        payload.sender ||
         payload.head_commit?.author ||
         commits[0]?.author ||
         commits[0]?.committer ||
-        payload.sender ||
         {};
 
     const commitCount =
@@ -98,11 +98,11 @@ export default payload => {
     return {
         color: COLORS.PUSH,
 
-        // Use the commit author as the Discord embed author for normal push events.
+        // Use the pusher as the Discord embed author for normal push events.
         author: {
             name:
-                sender.name ||
                 sender.login ||
+                sender.name ||
                 sender.username ||
                 "Unknown User",
             url:
