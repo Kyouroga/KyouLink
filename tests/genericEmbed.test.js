@@ -147,7 +147,7 @@ test('buildPushEmbed uses the pusher as the author for normal push notifications
     assert.equal(embed.title, '[Kyouroga/KyouLink:main] 1 new commit');
 });
 
-test('buildGenericEmbed creates a title-only embed for branch create and delete events', () => {
+test('buildGenericEmbed no longer handles branch create and delete events', () => {
     const createdPayload = {
         ref: 'refs/heads/feature/test',
         ref_type: 'branch',
@@ -174,19 +174,10 @@ test('buildGenericEmbed creates a title-only embed for branch create and delete 
     const createEventEmbed = buildGenericEmbed(createdPayload, 'create');
     const deleteEventEmbed = buildGenericEmbed(deletedPayload, 'delete');
 
-    assert.ok(createdEmbed);
-    assert.equal(createdEmbed.title, '[Kyouroga/KyouLink] New branch created: feature/test');
-    assert.equal(createdEmbed.url, undefined);
-
-    assert.ok(deletedEmbed);
-    assert.equal(deletedEmbed.title, '[Kyouroga/KyouLink] branch deleted: feature/test');
-    assert.equal(deletedEmbed.url, undefined);
-
-    assert.ok(createEventEmbed);
-    assert.equal(createEventEmbed.title, '[Kyouroga/KyouLink] New branch created: feature/test');
-
-    assert.ok(deleteEventEmbed);
-    assert.equal(deleteEventEmbed.title, '[Kyouroga/KyouLink] branch deleted: feature/test');
+    assert.equal(createdEmbed, null);
+    assert.equal(deletedEmbed, null);
+    assert.equal(createEventEmbed, null);
+    assert.equal(deleteEventEmbed, null);
 });
 
 test('commitCommentHandler emits a commit comment embed', async () => {
@@ -244,7 +235,7 @@ test('commitCommentHandler skips empty commit comment bodies', async () => {
     assert.equal(embed, null);
 });
 
-test('pushHandler uses the generic embed for branch create and delete events', async () => {
+test('pushHandler uses the dedicated branch handler for branch create and delete events', async () => {
     const payload = {
         ref: 'refs/heads/feature/test',
         ref_type: 'branch',
@@ -261,7 +252,7 @@ test('pushHandler uses the generic embed for branch create and delete events', a
     const embed = await pushHandler(payload, { NODE_ENV: 'test' });
 
     assert.ok(embed);
-    assert.equal(embed.title, '[Kyouroga/KyouLink] New branch created: feature/test');
+    assert.equal(embed.title, '[Kyouroga/KyouLink] branch created: feature/test');
 });
 
 test('buildGenericEmbed returns null for ignored events', () => {

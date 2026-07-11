@@ -148,30 +148,6 @@ function getTitle(payload, event, action) {
         return `${senderName} renamed repository: ${previousName} -> ${currentName}`;
     }
 
-    if (
-        // Branch create/delete pushes are rendered as a simpler, fixed-format title.
-        (event === 'push' || event === 'create' || event === 'delete') &&
-        payload.ref_type === 'branch' &&
-        (payload.created || payload.deleted)
-    ) {
-        const branch = getBranchName(payload.ref || '');
-        const branchAction = payload.deleted
-            ? 'deleted'
-            : payload.created
-            ? 'created'
-            : 'updated';
-
-        if (branchAction === 'created') {
-            return `[${repoName}] New branch created: ${branch || 'unknown'}`;
-        }
-
-        if (branchAction === 'deleted') {
-            return `[${repoName}] branch deleted: ${branch || 'unknown'}`;
-        }
-
-        return `[${repoName}] Branch ${branchAction}: ${branch || 'unknown'}`;
-    }
-
     if (event === 'watch' || event === 'star') {
         // Star/watch events should read naturally in Discord without extra formatting noise.
         return `${senderName} starred repository ${repoName}`;
@@ -224,13 +200,7 @@ function getUrl(payload) {
 }
 
 function isBranchLifecycleEvent(payload, event) {
-    // Branch create/delete events intentionally keep the title-only format without a URL.
-    const normalizedEvent = String(event || '').toLowerCase();
-    return (
-        (normalizedEvent === 'push' || normalizedEvent === 'create' || normalizedEvent === 'delete') &&
-        payload.ref_type === 'branch' &&
-        (payload.created || payload.deleted)
-    );
+    return false;
 }
 
 function isIgnoredEvent(event) {
@@ -248,10 +218,21 @@ function isIgnoredEvent(event) {
 }
 
 export default function buildGenericEmbed(payload, event) {
+    const normalizedEvent = String(event || '').toLowerCase();
+
+    // Branch create/delete/rename events are handled by dedicated branch handlers instead of the generic fallback.
+    if (
+        normalizedEvent === 'create' ||
+        normalizedEvent === 'delete' ||
+        normalizedEvent === 'rename' ||
+        (payload.ref_type === 'branch' && (payload.created || payload.deleted))
+    ) {
+        return null;
+    }
+
     // Resolve the action from the most common GitHub payload fields so the same builder works across event types.
     const action = payload.action || payload.state || payload.ref_type || payload.event || 'updated';
 
-    const normalizedEvent = String(event).toLowerCase();
     const normalizedAction = String(action).toLowerCase();
 
     if (
@@ -262,11 +243,7 @@ export default function buildGenericEmbed(payload, event) {
         return null;
     }
 
-    // Branch lifecycle pushes are handled by the generic embed builder as a fallback,
-    // so they should not be rejected just because the event is a push.
-    const isBranchLifecycle = isBranchLifecycleEvent(payload, event);
-
-    if (isIgnoredEvent(event) && !isBranchLifecycle) {
+    if (isIgnoredEvent(event)) {
         // Skip events that are intentionally unsupported by this bridge.
         return null;
     }
