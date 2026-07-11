@@ -105,11 +105,7 @@ export default payload => {
             ? truncate(issue.body || "", 1800)
             : "";
 
-    if (
-        description &&
-        description !==
-            "No content provided."
-    ) {
+    if (description) {
         embed.description =
             description;
     }

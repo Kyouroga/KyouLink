@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import buildGenericEmbed from '../src/embeds/genericEmbed.js';
 import buildPushEmbed from '../src/embeds/pushEmbed.js';
 import commitCommentHandler from '../src/handlers/commitComment.js';
+import pushHandler from '../src/handlers/push.js';
 import repositoryHandler from '../src/handlers/repository.js';
 import * as COLORS from '../src/utils/colors.js';
 
@@ -209,6 +210,50 @@ test('commitCommentHandler emits a commit comment embed', async () => {
     assert.ok(embed);
     assert.equal(embed.title, '[Kyouroga/KyouLink] Commit Comment on abc1234');
     assert.equal(embed.author.name, 'octocat');
+});
+
+test('commitCommentHandler skips empty commit comment bodies', async () => {
+    const payload = {
+        action: 'created',
+        comment: {
+            body: '   ',
+            html_url: 'https://github.com/Kyouroga/KyouLink/commit/abc1234#r1',
+            commit_id: 'abc1234',
+            user: {
+                login: 'octocat'
+            }
+        },
+        repository: {
+            full_name: 'Kyouroga/KyouLink'
+        },
+        sender: {
+            login: 'octocat'
+        }
+    };
+
+    const embed = await commitCommentHandler(payload, { NODE_ENV: 'test' });
+
+    assert.equal(embed, null);
+});
+
+test('pushHandler uses the generic embed for branch create and delete events', async () => {
+    const payload = {
+        ref: 'refs/heads/feature/test',
+        ref_type: 'branch',
+        created: true,
+        repository: {
+            full_name: 'Kyouroga/KyouLink',
+            html_url: 'https://github.com/Kyouroga/KyouLink'
+        },
+        sender: {
+            login: 'octocat'
+        }
+    };
+
+    const embed = await pushHandler(payload, { NODE_ENV: 'test' });
+
+    assert.ok(embed);
+    assert.equal(embed.title, '[Kyouroga/KyouLink] New branch created: feature/test');
 });
 
 test('buildGenericEmbed returns null for ignored events', () => {

@@ -30,16 +30,25 @@
 // Notes: Branch creation/deletion and normal commit pushes are both supported.
 import { sendEmbed } from '../services/discord.js';
 
-import buildEmbed from '../embeds/pushEmbed.js';
+import buildPushEmbed from '../embeds/pushEmbed.js';
+import buildGenericEmbed from '../embeds/genericEmbed.js';
 
 export default async (payload, env = {}) => {
-    const embed = buildEmbed(payload);
+    const isBranchLifecycle =
+        payload.ref_type === 'branch' &&
+        (payload.created || payload.deleted);
+
+    const embed = isBranchLifecycle
+        ? buildGenericEmbed(payload, 'push')
+        : buildPushEmbed(payload);
 
     if (!embed) {
-        return;
+        return null;
     }
 
     await sendEmbed(embed, undefined, env);
+
+    return embed;
 };
 
 

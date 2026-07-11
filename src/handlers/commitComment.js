@@ -31,12 +31,17 @@ import { sendEmbed } from '../services/discord.js';
 import buildEmbed from '../embeds/commitCommentEmbed.js';
 
 export default async (payload, env = {}) => {
-    // Only emit a notification for newly created commit comments.
+    // Only emit a notification for newly created commit comments with actual content.
     if (payload.action !== 'created') {
-        return;
+        return null;
     }
 
     const embed = buildEmbed(payload);
+
+    if (!embed) {
+        return null;
+    }
+
     await sendEmbed(embed, undefined, env);
 
     return embed;

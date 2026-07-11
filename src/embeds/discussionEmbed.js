@@ -111,11 +111,7 @@ export default payload => {
             1800
         );
 
-    if (
-        description &&
-        description !==
-            "No content provided."
-    ) {
+    if (description) {
         embed.description =
             description;
     }

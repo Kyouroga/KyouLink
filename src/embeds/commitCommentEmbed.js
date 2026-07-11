@@ -50,8 +50,10 @@ export default payload => {
 
     const description = truncate(comment.body || '', 1800);
 
-    if (description && description !== 'No content provided.') {
+    if (description) {
         embed.description = description;
+    } else {
+        return null;
     }
 
     return embed;
