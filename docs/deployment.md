@@ -29,4 +29,4 @@ The repository workflow can deploy automatically once the required secrets are c
 
 ## Generic fallback behavior
 
-Branch create/delete events and other compatible fallback payloads now route through the generic embed path so they still produce a Discord notification when a dedicated embed is not available.
+Branch create/delete/rename events now use dedicated branch handlers with the specific titles you requested, while other compatible fallback payloads still route through the generic embed path when no dedicated embed exists.

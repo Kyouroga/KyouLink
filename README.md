@@ -67,7 +67,10 @@ This project is designed for Cloudflare Workers. Use [docs/deployment.md](docs/d
 
 | Event | Notes |
 | --- | --- |
-| push | Handles branch-related updates and push notifications with commit-author attribution, including branch create/delete fallback embeds |
+| push | Handles normal push notifications with commit-author attribution |
+| create | Sends dedicated branch-created notifications |
+| delete | Sends dedicated branch-deleted notifications |
+| rename | Sends dedicated branch-renamed notifications |
 | fork | Sends a Discord notification when a repository is forked |
 | issues | Covers issue opened, closed, and related updates |
 | issue_comment | Supports comments on issues |
@@ -76,7 +79,7 @@ This project is designed for Cloudflare Workers. Use [docs/deployment.md](docs/d
 | pull_request_review_comment | Supports review comment notifications |
 | commit_comment | Sends commit-comment notifications that mirror the review-comment experience |
 | release | Sends release-related notifications |
-| repository | Covers repository-level actions such as rename events and generic fallback notifications |
+| repository | Covers repository-level actions such as rename events and other generic fallback notifications |
 | discussion | Sends discussion updates to Discord |
 
 ## Security
