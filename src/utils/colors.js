@@ -9,7 +9,6 @@ export const PR_OPENED = 0x9B59B6;
 export const PR_CLOSED = 0xE74C3C;
 export const PR_MERGED = 0x2ECC71;
 export const PR_REOPENED = 0x3498DB;
-export const REVIEW = 0x1ABC9C;
 export const REVIEW_COMMENT = 0x16A085;
 export const RELEASE = 0xF1C40F;
 export const STAR = 0xFFD700;
