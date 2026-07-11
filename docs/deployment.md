@@ -29,4 +29,4 @@ The repository workflow can deploy automatically once the required secrets are c
 
 ## Generic fallback behavior
 
-Branch create/delete/rename events now use dedicated branch handlers with the specific titles you requested, while other compatible fallback payloads still route through the generic embed path when no dedicated embed exists.
+Branch create/delete events use dedicated branch handlers with the specific titles you requested, while repository rename, transfer, archive, unarchive, and publicize actions now emit clear link-style titles and other compatible fallback payloads still route through the generic embed path when no dedicated embed exists.
