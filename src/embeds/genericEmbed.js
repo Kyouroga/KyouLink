@@ -97,6 +97,17 @@ function isRepositoryRenameEvent(payload, event, action) {
     );
 }
 
+function getRepositoryRenameTitle(payload, repoName) {
+    const previousName = payload.changes?.repository?.name?.from || payload.changes?.name?.from;
+    const currentName = payload.repository?.name || repoName;
+
+    if (!previousName || !currentName) {
+        return null;
+    }
+
+    return `[${repoName}] Renamed repository: ${previousName} -> ${currentName}`;
+}
+
 function getSender(payload) {
     // GitHub payloads place the actor in a few possible locations, so we resolve it defensively.
     return (
@@ -142,10 +153,23 @@ function getTitle(payload, event, action) {
         .trim();
 
     if (isRepositoryRenameEvent(payload, event, action)) {
-        // Rename events use a human-readable title that includes the old and new repository names.
-        const previousName = payload.changes?.repository?.name?.from || 'unknown';
-        const currentName = payload.repository?.name || repoName;
-        return `${senderName} renamed repository: ${previousName} -> ${currentName}`;
+        return getRepositoryRenameTitle(payload, repoName) || `[${repoName}] Renamed repository`;
+    }
+
+    if (event === 'repository' && normalizedAction === 'transferred') {
+        return `[${repoName}] Repository transferred`;
+    }
+
+    if (event === 'repository' && normalizedAction === 'archived') {
+        return `[${repoName}] Repository archived`;
+    }
+
+    if (event === 'repository' && normalizedAction === 'unarchived') {
+        return `[${repoName}] Repository unarchived`;
+    }
+
+    if (event === 'repository' && normalizedAction === 'publicized') {
+        return `[${repoName}] Repository made public`;
     }
 
     if (event === 'watch' || event === 'star') {
@@ -220,11 +244,10 @@ function isIgnoredEvent(event) {
 export default function buildGenericEmbed(payload, event) {
     const normalizedEvent = String(event || '').toLowerCase();
 
-    // Branch create/delete/rename events are handled by dedicated branch handlers instead of the generic fallback.
+    // Branch create/delete events are handled by dedicated branch handlers instead of the generic fallback.
     if (
         normalizedEvent === 'create' ||
         normalizedEvent === 'delete' ||
-        normalizedEvent === 'rename' ||
         (payload.ref_type === 'branch' && (payload.created || payload.deleted))
     ) {
         return null;
@@ -252,6 +275,7 @@ export default function buildGenericEmbed(payload, event) {
     const url = getUrl(payload);
     const sender = getSender(payload);
     const repositoryRenameEvent = isRepositoryRenameEvent(payload, event, action);
+    const isRepositoryEventWithLink = normalizedEvent === 'repository' && ['renamed', 'transferred', 'archived', 'unarchived', 'publicized'].includes(normalizedAction);
 
     const embed = {
         // Build the base Discord embed fields shared by most GitHub events.
@@ -264,8 +288,8 @@ export default function buildGenericEmbed(payload, event) {
         title
     };
 
-    if (url && !isBranchLifecycleEvent(payload, event) && !repositoryRenameEvent) {
-        // Add a URL when the event supports a direct GitHub reference and it is not a rename or branch lifecycle event.
+    if (url && !isBranchLifecycleEvent(payload, event) && (!repositoryRenameEvent || isRepositoryEventWithLink)) {
+        // Add a URL when the event supports a direct GitHub reference and it is not a branch lifecycle event.
         embed.url = url;
     }
 
