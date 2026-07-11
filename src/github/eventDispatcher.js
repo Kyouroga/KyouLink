@@ -51,7 +51,6 @@ const handlers = {
     pull_request_review_comment: pullRequestReviewCommentHandler,
     commit_comment: commitCommentHandler,
     repository: repositoryHandler,
-    rename: (payload, env) => branchHandler(payload, env, 'rename'),
     release: releaseHandler,
     discussion: discussionHandler,
     watch: repositoryHandler,
