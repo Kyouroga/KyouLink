@@ -24,6 +24,13 @@ npm install
 | GITHUB_SECRET | Verifies incoming GitHub webhook signatures |
 | DISCORD_WEBHOOK_URL | Sends the formatted Discord message |
 
+### Required GitHub repository secrets
+
+| Secret | Purpose |
+| --- | --- |
+| CF_API_TOKEN | Cloudflare API token with Workers publish permissions |
+| CF_ACCOUNT_ID | Cloudflare account ID |
+
 ## Usage
 
 The webhook entrypoint is handled by [src/github/webhookHandler.js](src/github/webhookHandler.js).

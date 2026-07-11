@@ -10,12 +10,12 @@ Use this guide for Cloudflare Worker deployment and GitHub Actions setup.
 | Wrangler access token | Allows deployment from the CLI or CI |
 | GitHub repository secrets | Required for automated deployment |
 
-## Required secrets
+## Required GitHub repository secrets
 
 | Secret | Purpose |
 | --- | --- |
-| CF_API_TOKEN | Authenticates Wrangler with Cloudflare |
-| CF_ACCOUNT_ID | Identifies the target Cloudflare account |
+| CF_API_TOKEN | Cloudflare API token with Workers publish permissions |
+| CF_ACCOUNT_ID | Cloudflare account ID |
 
 ## Deploy locally
 
