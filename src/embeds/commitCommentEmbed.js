@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2026 Kyouroga. https://kyouroga.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,34 +26,35 @@
  * see CONTRIBUTING.md in the project root.
  */
 
-// Handle GitHub push events and send push-specific embeds.
-// Notes: Branch creation/deletion and normal commit pushes are both supported.
-import { sendEmbed } from '../services/discord.js';
+import * as COLORS from '../utils/colors.js';
+import truncate from '../utils/truncate.js';
 
-import buildPushEmbed from '../embeds/pushEmbed.js';
-import branchHandler from './branch.js';
+export default payload => {
+    // Commit comments use the same structure as review comments, but target the commit itself.
+    const repo = payload.repository || {};
+    const comment = payload.comment || {};
+    const user = comment.user || payload.sender || {};
+    const commitId = comment.commit_id || 'unknown';
 
-export default async (payload, env = {}) => {
-    const isBranchLifecycle =
-        payload.ref_type === 'branch' &&
-        (payload.created || payload.deleted);
+    const embed = {
+        // Use the review-comment color so commit comments feel like part of the same family.
+        color: COLORS.REVIEW_COMMENT,
+        author: {
+            name: user.login || 'Unknown User',
+            url: user.html_url,
+            icon_url: user.avatar_url
+        },
+        title: `[${repo.full_name}] Commit Comment on ${commitId}`,
+        url: comment.html_url
+    };
 
-    if (isBranchLifecycle) {
-        const eventName = payload.deleted ? 'delete' : 'create';
-        return branchHandler(payload, env, eventName);
-    }
+    const description = truncate(comment.body || '', 1800);
 
-    const embed = buildPushEmbed(payload);
-
-    if (!embed) {
+    if (description) {
+        embed.description = description;
+    } else {
         return null;
     }
 
-    await sendEmbed(embed, undefined, env);
-
     return embed;
 };
-
-
-
-

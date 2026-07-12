@@ -2,6 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import buildGenericEmbed from '../src/embeds/genericEmbed.js';
+import buildPushEmbed from '../src/embeds/pushEmbed.js';
+import branchHandler from '../src/handlers/branch.js';
+import commitCommentHandler from '../src/handlers/commitComment.js';
+import pushHandler from '../src/handlers/push.js';
 import repositoryHandler from '../src/handlers/repository.js';
 import * as COLORS from '../src/utils/colors.js';
 
@@ -59,9 +63,47 @@ test('buildGenericEmbed handles repository rename events with a specific title',
     const embed = buildGenericEmbed(payload, 'repository');
 
     assert.ok(embed);
-    assert.equal(embed.title, 'octocat renamed repository: OldName -> KyouLink');
-    assert.equal(embed.url, undefined);
+    assert.equal(embed.title, '[Kyouroga/KyouLink] Renamed repository: OldName -> KyouLink');
+    assert.equal(embed.url, 'https://github.com/Kyouroga/KyouLink');
     assert.equal(embed.color, COLORS.PUSH);
+});
+
+test('buildGenericEmbed uses repository titles for transferred, archived, unarchived, and publicized events', () => {
+    const cases = [
+        {
+            action: 'transferred',
+            expectedTitle: '[Kyouroga/KyouLink] Repository transferred'
+        },
+        {
+            action: 'archived',
+            expectedTitle: '[Kyouroga/KyouLink] Repository archived'
+        },
+        {
+            action: 'unarchived',
+            expectedTitle: '[Kyouroga/KyouLink] Repository unarchived'
+        },
+        {
+            action: 'publicized',
+            expectedTitle: '[Kyouroga/KyouLink] Repository made public'
+        }
+    ];
+
+    for (const testCase of cases) {
+        const embed = buildGenericEmbed({
+            action: testCase.action,
+            repository: {
+                full_name: 'Kyouroga/KyouLink',
+                html_url: 'https://github.com/Kyouroga/KyouLink'
+            },
+            sender: {
+                login: 'octocat'
+            }
+        }, 'repository');
+
+        assert.ok(embed);
+        assert.equal(embed.title, testCase.expectedTitle);
+        assert.equal(embed.url, 'https://github.com/Kyouroga/KyouLink');
+    }
 });
 
 test('buildGenericEmbed creates an embed for a starred repository event', () => {
@@ -86,6 +128,28 @@ test('buildGenericEmbed creates an embed for a starred repository event', () => 
     assert.equal(embed.author.name, 'octocat');
 });
 
+test('branchHandler ignores branch rename payloads because GitHub sends create/delete only', async () => {
+    const payload = {
+        ref: 'refs/heads/feature/test',
+        repository: {
+            full_name: 'Kyouroga/KyouLink',
+            html_url: 'https://github.com/Kyouroga/KyouLink'
+        },
+        changes: {
+            ref: {
+                from: 'feature/old'
+            }
+        },
+        sender: {
+            login: 'octocat'
+        }
+    };
+
+    const embed = await branchHandler(payload, { NODE_ENV: 'test' }, 'rename');
+
+    assert.equal(embed, null);
+});
+
 test('repositoryHandler uses the generic embed for star events', async () => {
     const payload = {
         action: 'started',
@@ -107,7 +171,44 @@ test('repositoryHandler uses the generic embed for star events', async () => {
     assert.equal(embed.color, COLORS.STAR);
 });
 
-test('buildGenericEmbed creates a title-only embed for branch create and delete events', () => {
+test('buildPushEmbed uses the pusher as the author for normal push notifications', () => {
+    const payload = {
+        ref: 'refs/heads/main',
+        repository: {
+            full_name: 'Kyouroga/KyouLink',
+            html_url: 'https://github.com/Kyouroga/KyouLink'
+        },
+        sender: {
+            login: 'octocat',
+            html_url: 'https://github.com/octocat',
+            avatar_url: 'https://github.com/octocat.png'
+        },
+        head_commit: {
+            author: {
+                name: 'Ada Lovelace',
+                username: 'ada'
+            }
+        },
+        commits: [
+            {
+                id: 'abc1234',
+                message: 'feat: ship a new widget',
+                author: {
+                    name: 'Ada Lovelace',
+                    username: 'ada'
+                }
+            }
+        ]
+    };
+
+    const embed = buildPushEmbed(payload);
+
+    assert.ok(embed);
+    assert.equal(embed.author.name, 'octocat');
+    assert.equal(embed.title, '[Kyouroga/KyouLink:main] 1 new commit');
+});
+
+test('buildGenericEmbed no longer handles branch create and delete events', () => {
     const createdPayload = {
         ref: 'refs/heads/feature/test',
         ref_type: 'branch',
@@ -131,14 +232,88 @@ test('buildGenericEmbed creates a title-only embed for branch create and delete 
 
     const createdEmbed = buildGenericEmbed(createdPayload, 'push');
     const deletedEmbed = buildGenericEmbed(deletedPayload, 'push');
+    const createEventEmbed = buildGenericEmbed(createdPayload, 'create');
+    const deleteEventEmbed = buildGenericEmbed(deletedPayload, 'delete');
 
-    assert.ok(createdEmbed);
-    assert.equal(createdEmbed.title, '[Kyouroga/KyouLink] New branch created: feature/test');
-    assert.equal(createdEmbed.url, undefined);
+    assert.equal(createdEmbed, null);
+    assert.equal(deletedEmbed, null);
+    assert.equal(createEventEmbed, null);
+    assert.equal(deleteEventEmbed, null);
+});
 
-    assert.ok(deletedEmbed);
-    assert.equal(deletedEmbed.title, '[Kyouroga/KyouLink] branch deleted: feature/test');
-    assert.equal(deletedEmbed.url, undefined);
+test('commitCommentHandler emits a commit comment embed', async () => {
+    const payload = {
+        action: 'created',
+        comment: {
+            body: 'Looks good to me',
+            html_url: 'https://github.com/Kyouroga/KyouLink/commit/abc1234#r1',
+            commit_id: 'abc1234',
+            user: {
+                login: 'octocat',
+                html_url: 'https://github.com/octocat',
+                avatar_url: 'https://github.com/octocat.png'
+            }
+        },
+        repository: {
+            full_name: 'Kyouroga/KyouLink',
+            html_url: 'https://github.com/Kyouroga/KyouLink'
+        },
+        sender: {
+            login: 'octocat',
+            html_url: 'https://github.com/octocat',
+            avatar_url: 'https://github.com/octocat.png'
+        }
+    };
+
+    const embed = await commitCommentHandler(payload, { NODE_ENV: 'test' });
+
+    assert.ok(embed);
+    assert.equal(embed.title, '[Kyouroga/KyouLink] Commit Comment on abc1234');
+    assert.equal(embed.author.name, 'octocat');
+});
+
+test('commitCommentHandler skips empty commit comment bodies', async () => {
+    const payload = {
+        action: 'created',
+        comment: {
+            body: '   ',
+            html_url: 'https://github.com/Kyouroga/KyouLink/commit/abc1234#r1',
+            commit_id: 'abc1234',
+            user: {
+                login: 'octocat'
+            }
+        },
+        repository: {
+            full_name: 'Kyouroga/KyouLink'
+        },
+        sender: {
+            login: 'octocat'
+        }
+    };
+
+    const embed = await commitCommentHandler(payload, { NODE_ENV: 'test' });
+
+    assert.equal(embed, null);
+});
+
+test('pushHandler uses the dedicated branch handler for branch create and delete events', async () => {
+    const payload = {
+        ref: 'refs/heads/feature/test',
+        ref_type: 'branch',
+        created: true,
+        repository: {
+            full_name: 'Kyouroga/KyouLink',
+            html_url: 'https://github.com/Kyouroga/KyouLink'
+        },
+        sender: {
+            login: 'octocat'
+        }
+    };
+
+    const embed = await pushHandler(payload, { NODE_ENV: 'test' });
+
+    assert.ok(embed);
+    assert.equal(embed.title, '[Kyouroga/KyouLink] branch created: feature/test');
 });
 
 test('buildGenericEmbed returns null for ignored events', () => {

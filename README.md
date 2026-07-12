@@ -24,6 +24,13 @@ npm install
 | GITHUB_SECRET | Verifies incoming GitHub webhook signatures |
 | DISCORD_WEBHOOK_URL | Sends the formatted Discord message |
 
+### Required GitHub repository secrets
+
+| Secret | Purpose |
+| --- | --- |
+| CF_API_TOKEN | Cloudflare API token with Workers publish permissions |
+| CF_ACCOUNT_ID | Cloudflare account ID |
+
 ## Usage
 
 The webhook entrypoint is handled by [src/github/webhookHandler.js](src/github/webhookHandler.js).
@@ -60,15 +67,18 @@ This project is designed for Cloudflare Workers. Use [docs/deployment.md](docs/d
 
 | Event | Notes |
 | --- | --- |
-| push | Handles branch-related updates and push notifications |
+| push | Handles normal push notifications with commit-author attribution |
+| create | Sends dedicated branch-created notifications |
+| delete | Sends dedicated branch-deleted notifications |
 | fork | Sends a Discord notification when a repository is forked |
 | issues | Covers issue opened, closed, and related updates |
 | issue_comment | Supports comments on issues |
 | pull_request | Handles pull request lifecycle updates |
 | pull_request_review | Covers review activity |
 | pull_request_review_comment | Supports review comment notifications |
+| commit_comment | Sends commit-comment notifications that mirror the review-comment experience |
 | release | Sends release-related notifications |
-| repository | Covers repository-level actions such as rename events |
+| repository | Covers repository-level actions such as repository rename, transfer, archive, unarchive, and publicize notifications with link-style titles |
 | discussion | Sends discussion updates to Discord |
 
 ## Security

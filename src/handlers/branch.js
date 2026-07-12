@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2026 Kyouroga. https://kyouroga.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,34 +26,58 @@
  * see CONTRIBUTING.md in the project root.
  */
 
-// Handle GitHub push events and send push-specific embeds.
-// Notes: Branch creation/deletion and normal commit pushes are both supported.
+// Handle branch create and delete notifications with dedicated embed titles.
 import { sendEmbed } from '../services/discord.js';
+import { getBranchName } from '../utils/formatters.js';
+import * as COLORS from '../utils/colors.js';
 
-import buildPushEmbed from '../embeds/pushEmbed.js';
-import branchHandler from './branch.js';
+function buildBranchEmbed(payload, eventName) {
+    const repoName =
+        payload.repository?.full_name ||
+        payload.repository?.name ||
+        'Repository';
 
-export default async (payload, env = {}) => {
-    const isBranchLifecycle =
-        payload.ref_type === 'branch' &&
-        (payload.created || payload.deleted);
+    const branch = getBranchName(payload.ref || '');
+    const sender = payload.sender || {};
 
-    if (isBranchLifecycle) {
-        const eventName = payload.deleted ? 'delete' : 'create';
-        return branchHandler(payload, env, eventName);
+    if (!branch) {
+        return null;
     }
 
-    const embed = buildPushEmbed(payload);
+    if (eventName === 'create') {
+        return {
+            color: COLORS.PUSH,
+            author: {
+                name: sender.login || sender.name || sender.username || 'GitHub',
+                url: sender.html_url,
+                icon_url: sender.avatar_url
+            },
+            title: `[${repoName}] branch created: ${branch}`
+        };
+    }
+
+    if (eventName === 'delete') {
+        return {
+            color: COLORS.PUSH,
+            author: {
+                name: sender.login || sender.name || sender.username || 'GitHub',
+                url: sender.html_url,
+                icon_url: sender.avatar_url
+            },
+            title: `[${repoName}] branch deleted: ${branch}`
+        };
+    }
+
+    return null;
+}
+
+export default async (payload, env = {}, eventName = 'create') => {
+    const embed = buildBranchEmbed(payload, eventName);
 
     if (!embed) {
         return null;
     }
 
     await sendEmbed(embed, undefined, env);
-
     return embed;
 };
-
-
-
-

@@ -26,8 +26,9 @@
  * see CONTRIBUTING.md in the project root.
  */
 
-// Route supported GitHub events to their dedicated handlers.
-// Notes: Generic fallback is disabled so unknown events do not emit embeds.
+// Route supported GitHub events to their dedicated handlers and fall back to the generic embed builder when needed.
+import branchHandler from "../handlers/branch.js";
+import commitCommentHandler from "../handlers/commitComment.js";
 import discussionHandler from "../handlers/discussion.js";
 import forkHandler from "../handlers/fork.js";
 import issueCommentHandler from "../handlers/issueComment.js";
@@ -41,11 +42,14 @@ import releaseHandler from "../handlers/release.js";
 // Map supported GitHub event names to the handlers that build and send embeds.
 const handlers = {
     push: pushHandler,
+    create: (payload, env) => branchHandler(payload, env, 'create'),
+    delete: (payload, env) => branchHandler(payload, env, 'delete'),
     fork: forkHandler,
     issues: issuesHandler,
     issue_comment: issueCommentHandler,
     pull_request: pullRequestHandler,
     pull_request_review_comment: pullRequestReviewCommentHandler,
+    commit_comment: commitCommentHandler,
     repository: repositoryHandler,
     release: releaseHandler,
     discussion: discussionHandler,
@@ -53,13 +57,22 @@ const handlers = {
     star: repositoryHandler
 };
 
-// Route only supported GitHub events to their dedicated handlers.
-// Unknown events are ignored rather than emitting a generic fallback embed.
+// Route supported GitHub events to their dedicated handlers and use the generic embed builder as a fallback for branch lifecycle and other compatible payloads.
 export default async function dispatch(event, payload, env = {}) {
     const handler = handlers[event];
 
     if (handler) {
         await handler(payload, env);
+        return;
+    }
+
+    const genericEmbed = payload && typeof payload === 'object'
+        ? (await import('../embeds/genericEmbed.js')).default(payload, event)
+        : null;
+
+    if (genericEmbed) {
+        const { sendEmbed } = await import('../services/discord.js');
+        await sendEmbed(genericEmbed, undefined, env);
     }
 };
 

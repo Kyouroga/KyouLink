@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2026 Kyouroga. https://kyouroga.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,24 +26,17 @@
  * see CONTRIBUTING.md in the project root.
  */
 
-// Handle GitHub push events and send push-specific embeds.
-// Notes: Branch creation/deletion and normal commit pushes are both supported.
+// Handle commit comment events and send commit-comment embeds.
 import { sendEmbed } from '../services/discord.js';
-
-import buildPushEmbed from '../embeds/pushEmbed.js';
-import branchHandler from './branch.js';
+import buildEmbed from '../embeds/commitCommentEmbed.js';
 
 export default async (payload, env = {}) => {
-    const isBranchLifecycle =
-        payload.ref_type === 'branch' &&
-        (payload.created || payload.deleted);
-
-    if (isBranchLifecycle) {
-        const eventName = payload.deleted ? 'delete' : 'create';
-        return branchHandler(payload, env, eventName);
+    // Only emit a notification for newly created commit comments with actual content.
+    if (payload.action !== 'created') {
+        return null;
     }
 
-    const embed = buildPushEmbed(payload);
+    const embed = buildEmbed(payload);
 
     if (!embed) {
         return null;
@@ -53,7 +46,3 @@ export default async (payload, env = {}) => {
 
     return embed;
 };
-
-
-
-

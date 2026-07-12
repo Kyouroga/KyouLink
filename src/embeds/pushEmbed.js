@@ -77,12 +77,16 @@ export default payload => {
             payload.ref || ""
         );
 
-    // Use the user who pushed the commits as the embed author for normal push events.
-    const sender =
-        payload.sender || {};
-
     const commits =
         payload.commits || [];
+
+    // Use the person who triggered the push as the embed author for normal push events.
+    const sender =
+        payload.sender ||
+        payload.head_commit?.author ||
+        commits[0]?.author ||
+        commits[0]?.committer ||
+        {};
 
     const commitCount =
         commits.length;
@@ -94,10 +98,12 @@ export default payload => {
     return {
         color: COLORS.PUSH,
 
-        // Use the commit author as the Discord embed author for normal push events.
+        // Use the pusher as the Discord embed author for normal push events.
         author: {
             name:
                 sender.login ||
+                sender.name ||
+                sender.username ||
                 "Unknown User",
             url:
                 sender.html_url ||
