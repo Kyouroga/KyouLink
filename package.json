@@ -5,8 +5,8 @@
   "main": "src/github/webhookHandler.js",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/webhookHandler.test.js tests/genericEmbed.test.js",
-    "test:watch": "node --test --watch tests/webhookHandler.test.js tests/genericEmbed.test.js"
+    "test": "node --test tests/webhookHandler.test.js tests/genericEmbed.test.js tests/eventDispatcher.test.js",
+    "test:watch": "node --test --watch tests/webhookHandler.test.js tests/genericEmbed.test.js tests/eventDispatcher.test.js"
   },
   "keywords": [
     "github",
