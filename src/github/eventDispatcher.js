@@ -57,13 +57,15 @@ const handlers = {
     star: repositoryHandler
 };
 
-// Route supported GitHub events to their dedicated handlers and use the generic embed builder as a fallback for branch lifecycle and other compatible payloads.
+// Route supported GitHub events to their dedicated handlers and use the generic embed builder as a fallback for payloads that are not otherwise handled.
 export default async function dispatch(event, payload, env = {}) {
     const handler = handlers[event];
 
     if (handler) {
-        await handler(payload, env);
-        return;
+        const result = await handler(payload, env);
+        if (result) {
+            return;
+        }
     }
 
     const genericEmbed = payload && typeof payload === 'object'
