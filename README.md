@@ -5,7 +5,7 @@ A secure GitHub → Discord webhook bridge logic library redesigned for Cloudfla
 - [Setup](#setup): Install and configure the project
 - [Testing](docs/testing.md): Run the regression suite locally
 - [Deployment](docs/deployment.md): Deploy to Cloudflare Workers
-- [Security](docs/security.md): Review secret handling and protection
+- [Secret](docs/secret.md): Review secret handling and protection
 
 ## Setup
 1. Clone the repository.
