@@ -1,4 +1,4 @@
-# Security
+# Secret
 
 Keep these values private:
 
